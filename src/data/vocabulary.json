@@ -1,0 +1,130 @@
+{
+  "A1": {
+    "greetings": [
+      "hello", "goodbye", "thanks", "please", "sorry", "yes", "no", "help",
+      "welcome", "excuse", "pardon", "nice", "meet", "hi", "bye", "morning",
+      "afternoon", "evening", "night", "good"
+    ],
+    "family": [
+      "family", "friend", "teacher", "student", "father", "mother", "brother", "sister",
+      "parent", "child", "baby", "son", "daughter", "husband", "wife", "uncle",
+      "aunt", "cousin", "grandparent", "grandfather"
+    ],
+    "food": [
+      "food", "water", "bread", "rice", "fruit", "vegetable", "meat", "fish",
+      "chicken", "egg", "milk", "cheese", "butter", "sugar", "salt", "coffee",
+      "tea", "juice", "cake", "apple"
+    ],
+    "home": [
+      "house", "room", "door", "window", "table", "chair", "bed", "kitchen",
+      "bathroom", "garden", "floor", "wall", "roof", "sofa", "desk", "lamp",
+      "mirror", "closet", "shelf", "drawer"
+    ],
+    "school": [
+      "school", "book", "pen", "paper", "class", "homework", "test", "study",
+      "learn", "teach", "student", "teacher", "lesson", "subject", "exam", "grade",
+      "notebook", "pencil", "eraser", "ruler"
+    ],
+    "work": [
+      "work", "office", "computer", "phone", "email", "meeting", "project", "team",
+      "job", "boss", "colleague", "manager", "employee", "task", "report", "schedule",
+      "deadline", "break", "lunch", "salary"
+    ]
+  },
+  "A2": {
+    "emotions": [
+      "happy", "sad", "angry", "tired", "excited", "worried", "surprised", "calm",
+      "afraid", "scared", "nervous", "proud", "ashamed", "lonely", "bored", "confused",
+      "disappointed", "relieved", "jealous", "grateful"
+    ],
+    "actions": [
+      "walk", "run", "jump", "sit", "stand", "sleep", "eat", "drink",
+      "talk", "listen", "watch", "read", "write", "think", "laugh", "cry",
+      "smile", "dance", "sing", "play"
+    ],
+    "colors": [
+      "red", "blue", "green", "yellow", "black", "white", "orange", "purple",
+      "pink", "brown", "gray", "silver", "gold", "beige", "navy", "turquoise",
+      "violet", "maroon", "cream", "dark"
+    ],
+    "numbers": [
+      "one", "two", "three", "four", "five", "six", "seven", "eight",
+      "nine", "ten", "eleven", "twelve", "twenty", "thirty", "fifty", "hundred",
+      "thousand", "million", "first", "second"
+    ],
+    "weather": [
+      "weather", "rain", "sun", "cloud", "wind", "snow", "hot", "cold",
+      "warm", "cool", "storm", "thunder", "lightning", "fog", "frost", "temperature",
+      "sunny", "cloudy", "rainy", "windy"
+    ],
+    "days": [
+      "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "today",
+      "tomorrow", "yesterday", "week", "weekend", "weekday", "month", "year", "day",
+      "date", "calendar", "holiday", "season"
+    ]
+  },
+  "B1": {
+    "animals": [
+      "cat", "dog", "bird", "horse", "cow", "chicken", "pig", "sheep",
+      "goat", "rabbit", "mouse", "lion", "tiger", "bear", "elephant", "monkey",
+      "snake", "turtle", "frog", "butterfly"
+    ],
+    "transport": [
+      "car", "bus", "train", "plane", "bicycle", "boat", "taxi", "motorcycle",
+      "ship", "truck", "van", "metro", "subway", "helicopter", "scooter", "tram",
+      "ferry", "vehicle", "traffic", "drive"
+    ],
+    "shopping": [
+      "buy", "sell", "pay", "price", "money", "shop", "store", "customer",
+      "product", "sale", "discount", "receipt", "cash", "card", "change", "expensive",
+      "cheap", "cost", "purchase", "retail"
+    ],
+    "time": [
+      "morning", "afternoon", "evening", "night", "time", "hour", "minute", "second",
+      "clock", "watch", "early", "late", "now", "soon", "later", "past",
+      "future", "present", "moment", "period"
+    ],
+    "body": [
+      "head", "eye", "ear", "nose", "mouth", "hand", "foot", "arm",
+      "leg", "finger", "toe", "neck", "shoulder", "knee", "elbow", "face",
+      "hair", "teeth", "tongue", "skin"
+    ],
+    "places": [
+      "country", "city", "town", "village", "street", "road", "bridge", "park",
+      "beach", "mountain", "river", "lake", "forest", "building", "hospital", "airport",
+      "station", "restaurant", "hotel", "library"
+    ]
+  },
+  "B2": {
+    "business": [
+      "business", "company", "market", "profit", "investment", "contract", "negotiate", "budget",
+      "economy", "finance", "revenue", "expense", "customer", "client", "industry", "strategy",
+      "management", "corporation", "entrepreneur", "startup"
+    ],
+    "technology": [
+      "technology", "software", "hardware", "network", "database", "program", "code", "security",
+      "internet", "website", "application", "digital", "online", "cyber", "cloud", "data",
+      "system", "algorithm", "artificial", "intelligence"
+    ],
+    "travel": [
+      "travel", "journey", "destination", "luggage", "passport", "ticket", "accommodation", "tourist",
+      "vacation", "adventure", "explore", "visit", "tour", "guide", "itinerary", "flight",
+      "booking", "resort", "sightseeing", "trip"
+    ],
+    "health": [
+      "health", "medicine", "doctor", "hospital", "patient", "treatment", "disease", "cure",
+      "nurse", "clinic", "surgery", "therapy", "symptom", "diagnosis", "prescription", "vaccine",
+      "immune", "exercise", "nutrition", "wellness"
+    ],
+    "hobbies": [
+      "hobby", "sport", "game", "music", "art", "reading", "cooking", "photography",
+      "painting", "drawing", "dance", "yoga", "gardening", "travel", "collection", "craft",
+      "writing", "singing", "fishing", "hiking"
+    ],
+    "environment": [
+      "environment", "pollution", "climate", "nature", "recycle", "energy", "forest", "ocean",
+      "conservation", "ecosystem", "biodiversity", "renewable", "sustainable", "waste", "carbon", "global",
+      "warming", "wildlife", "habitat", "ecological"
+    ]
+  }
+}

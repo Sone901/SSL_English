@@ -1,0 +1,98 @@
+{
+  "greetings": {
+    "name": "Chào hỏi",
+    "description": "Các câu chào cơ bản"
+  },
+  "family": {
+    "name": "Gia đình",
+    "description": "Từ về gia đình"
+  },
+  "food": {
+    "name": "Thức ăn",
+    "description": "Đồ ăn thức uống"
+  },
+  "home": {
+    "name": "Nhà cửa",
+    "description": "Đồ vật trong nhà"
+  },
+  "school": {
+    "name": "Trường học",
+    "description": "Môi trường học tập"
+  },
+  "work": {
+    "name": "Công việc",
+    "description": "Từ về công việc"
+  },
+  "emotions": {
+    "name": "Cảm xúc",
+    "description": "Trạng thái cảm xúc"
+  },
+  "actions": {
+    "name": "Hành động",
+    "description": "Động từ thường dùng"
+  },
+  "colors": {
+    "name": "Màu sắc",
+    "description": "Tên các màu"
+  },
+  "numbers": {
+    "name": "Số đếm",
+    "description": "Số và đếm"
+  },
+  "weather": {
+    "name": "Thời tiết",
+    "description": "Các hiện tượng thời tiết"
+  },
+  "days": {
+    "name": "Ngày trong tuần",
+    "description": "Thứ và ngày"
+  },
+  "animals": {
+    "name": "Động vật",
+    "description": "Các loài vật"
+  },
+  "transport": {
+    "name": "Phương tiện",
+    "description": "Phương tiện giao thông"
+  },
+  "shopping": {
+    "name": "Mua sắm",
+    "description": "Từ về mua bán"
+  },
+  "time": {
+    "name": "Thời gian",
+    "description": "Các khung giờ"
+  },
+  "body": {
+    "name": "Cơ thể",
+    "description": "Bộ phận cơ thể"
+  },
+  "places": {
+    "name": "Địa điểm",
+    "description": "Các nơi chốn"
+  },
+  "business": {
+    "name": "Kinh doanh",
+    "description": "Thuật ngữ kinh doanh"
+  },
+  "technology": {
+    "name": "Công nghệ",
+    "description": "Từ về công nghệ"
+  },
+  "travel": {
+    "name": "Du lịch",
+    "description": "Từ về du lịch"
+  },
+  "health": {
+    "name": "Sức khỏe",
+    "description": "Y tế và sức khỏe"
+  },
+  "hobbies": {
+    "name": "Sở thích",
+    "description": "Hoạt động giải trí"
+  },
+  "environment": {
+    "name": "Môi trường",
+    "description": "Từ về môi trường"
+  }
+}

@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== HIỆU ỨNG HOA MAI RƠI ===== */
+
+/* Định nghĩa animation rơi từ trên xuống */
+@keyframes flowers-fall {
+    0% { 
+        top: -10%;
+        opacity: 1;
+    }
+    100% { 
+        top: 100vh;
+        opacity: 0.3;
+    }
+}
+
+/* Animation lắc lư sang hai bên (giả lập gió) */
+@keyframes flowers-shake {
+    0%, 100% { transform: translateX(0) rotateZ(0deg); }
+    50% { transform: translateX(50px) rotateZ(10deg); }
+}
+
+/* Container hoa */
+.flowers-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* Thiết lập chung cho từng bông hoa */
+.flower {
+    position: fixed;
+    top: -10%;
+    width: 30px;
+    height: 30px;
+    z-index: 9;
+    
+    /* Chống chọn */
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+    pointer-events: none;
+    
+    /* Animation */
+    animation-name: flowers-fall, flowers-shake;
+    animation-duration: 12s, 3s;
+    animation-timing-function: linear, ease-in-out;
+    animation-iteration-count: infinite, infinite;
+    animation-play-state: running, running;
+    filter: drop-shadow(0 0 2px rgba(220, 38, 38, 0.3));
+}
+
+/* Tối ưu cho tablet */
+@media (max-width: 1024px) {
+    .flower {
+        width: 25px;
+        height: 25px;
+        animation-duration: 14s, 4s;
+    }
+    
+    /* Ẩn một nửa hoa trên tablet */
+    .flower:nth-of-type(n+7) {
+        display: none;
+    }
+}
+
+/* Tối ưu cho mobile */
+@media (max-width: 768px) {
+    .flower {
+        width: 20px;
+        height: 20px;
+        opacity: 0.6;
+        animation-duration: 16s, 5s;
+    }
+    
+    /* Ẩn 2/3 hoa, chỉ giữ 4 bông để không lag */
+    .flower:nth-of-type(n+5) {
+        display: none;
+    }
+}

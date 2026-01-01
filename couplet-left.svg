@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 500" width="180" height="450">
+  <!-- Defs for gradients -->
+  <defs>
+    <linearGradient id="woodGradL" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b6914;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#a0791a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6b5810;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Top red section -->
+  <rect x="0" y="0" width="200" height="50" fill="#dc2626"/>
+  
+  <!-- Top wood bar (simulate wood texture) -->
+  <rect x="5" y="45" width="190" height="25" fill="url(#woodGradL)" stroke="#3d3109" stroke-width="1" rx="3"/>
+  <circle cx="25" cy="57" r="3" fill="#1a1510" opacity="0.6"/>
+  <circle cx="175" cy="57" r="3" fill="#1a1510" opacity="0.6"/>
+  
+  <!-- Middle cream/beige section (main scroll area) -->
+  <rect x="5" y="70" width="190" height="350" fill="#fef5d5" stroke="#d4af37" stroke-width="2" rx="2"/>
+  
+  <!-- Decorative flower elements (hoa mai) -->
+  <g opacity="0.5">
+    <!-- Flower cluster -->
+    <circle cx="170" cy="100" r="3" fill="#c97064"/>
+    <circle cx="175" cy="105" r="2.5" fill="#d4a574"/>
+    <circle cx="172" cy="110" r="2" fill="#a0621a"/>
+    <line x1="172" y1="95" x2="170" y2="100" stroke="#6b8e23" stroke-width="1"/>
+  </g>
+  
+  <!-- Text - Vertical style (Phúc Lộc Tài) -->
+  <text x="100" y="120" font-family="'Times New Roman', serif" font-size="52" font-weight="bold" fill="#8b0000" text-anchor="middle" letter-spacing="5">
+    <tspan x="100" dy="65">祝</tspan>
+  </text>
+  
+  <!-- Vietnamese alternative text -->
+  <text x="70" y="130" font-family="'Times New Roman', serif" font-size="38" font-weight="bold" fill="#8b0000" text-anchor="middle" line-height="1.8">
+    <tspan x="70" dy="55">Phúc</tspan>
+    <tspan x="70" dy="55">Lộc</tspan>
+    <tspan x="70" dy="55">Tài</tspan>
+  </text>
+  
+  <!-- Bottom wood bar -->
+  <rect x="5" y="435" width="190" height="25" fill="url(#woodGradL)" stroke="#3d3109" stroke-width="1" rx="3"/>
+  <circle cx="25" cy="447" r="3" fill="#1a1510" opacity="0.6"/>
+  <circle cx="175" cy="447" r="3" fill="#1a1510" opacity="0.6"/>
+  
+  <!-- Bottom red section -->
+  <rect x="0" y="460" width="200" height="40" fill="#dc2626"/>
+</svg>
