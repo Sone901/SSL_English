@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { saveTestScore } from '@/lib/progress'
+import { auth } from '@/auth'
+import { kv } from '@vercel/kv'
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth()
+    const session = await auth()
+    const userId = session?.user?.id
     
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Level and score required' }, { status: 400 })
     }
 
-    await saveTestScore(userId, level, score)
+    await kv.set(`test_progress:${userId}`, { level, score })
     
     return NextResponse.json({ ok: true, message: 'Test score saved' })
   } catch (error) {

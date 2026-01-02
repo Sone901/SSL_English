@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { markLessonComplete } from '@/lib/progress'
+import { auth } from '@/auth'
+import { kv } from '@vercel/kv'
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth()
+    const session = await auth()
+    const userId = session?.user?.id
     
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Lesson ID required' }, { status: 400 })
     }
 
-    await markLessonComplete(userId, lessonId)
+    await kv.set(`lesson_complete:${userId}:${lessonId}`, true)
     
     return NextResponse.json({ ok: true, message: 'Lesson marked as complete' })
   } catch (error) {

@@ -23,7 +23,7 @@ export default function SignInPage() {
         password,
         redirect: true,
         callbackUrl: callbackUrl
-      })
+      }) as any
 
       if (result?.error) {
         setError('Đăng nhập không thành công')

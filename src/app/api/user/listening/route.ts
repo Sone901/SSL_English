@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { saveListeningProgress } from '@/lib/kv'
+import { auth } from '@/auth'
+import { kv } from '@vercel/kv'
 
 export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
   try {
-    const { userId } = await auth()
+    const session = await auth()
+    const userId = session?.user?.id
     
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -18,13 +19,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    const success = await saveListeningProgress(userId, lessonId, score, total)
+    await kv.set(`listening_progress:${userId}`, { lessonId, score, total })
     
-    if (success) {
-      return NextResponse.json({ success: true })
-    } else {
-      return NextResponse.json({ error: 'Failed to save progress' }, { status: 500 })
-    }
+    return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error saving listening progress:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

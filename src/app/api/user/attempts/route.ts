@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     await kv.set(`user:${userId}:attempts`, updatedAttempts)
 
     // Update general activity count
-    const activity = await kv.get(`user:${userId}:activity`) || {
+    const activity: any = await kv.get(`user:${userId}:activity`) || {
       totalAttempts: 0,
       vocabularyAttempts: 0,
       readingAttempts: 0,

@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { saveVocabularyProgress } from '@/lib/kv'
+import { auth } from '@/auth'
+import { kv } from '@vercel/kv'
 
 export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
   try {
-    const { userId } = await auth()
+    const session = await auth()
+    const userId = session?.user?.id
     
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -17,14 +18,9 @@ export async function POST(request: Request) {
     if (!level || !topic || score === undefined || total === undefined) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
-
-    const success = await saveVocabularyProgress(userId, level, topic, score, total)
+    await kv.set(`vocabulary_progress:${userId}`, { level, topic, score, total })
     
-    if (success) {
-      return NextResponse.json({ success: true })
-    } else {
-      return NextResponse.json({ error: 'Failed to save progress' }, { status: 500 })
-    }
+    return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error saving vocabulary progress:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     const { action, data } = body
 
     // Get current progress
-    let progress = await kv.get(`user:${userId}:progress`) || {
+    let progress: any = await kv.get(`user:${userId}:progress`) || {
       userId,
       lessonsCompleted: [],
       testScores: {},

@@ -1,11 +1,10 @@
 import { kv } from "@vercel/kv"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
-import type { NextAuthOptions } from "next-auth"
 import type { JWT } from "next-auth/jwt"
 import type { Session } from "next-auth"
 
-export const authConfig: NextAuthOptions = {
+export const authConfig = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
@@ -38,11 +37,11 @@ export const authConfig: NextAuthOptions = {
           }
 
           return {
-            id: credentials.username,
+            id: String(credentials.username),
             email: `${credentials.username}@ssl-english.local`,
-            name: credentials.username,
+            name: String(credentials.username),
             image: null,
-          }
+          } as any
         } catch (error) {
           console.error('Authorization error:', error)
           return null
