@@ -3,7 +3,21 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 const isPublicRoute = createRouteMatcher(['/'])
 
 export default clerkMiddleware((auth, req) => {
-  if (!isPublicRoute(req)) auth().protect()
+  const path = req.nextUrl.pathname
+  console.log('🔍 Middleware checking:', path)
+  
+  if (!isPublicRoute(req)) {
+    console.log('🔒 Protected route, checking auth...')
+    try {
+      auth().protect()
+      console.log('✅ User authenticated')
+    } catch (error) {
+      console.log('❌ User not authenticated, should redirect')
+      throw error
+    }
+  } else {
+    console.log('🌐 Public route, allowing access')
+  }
 })
 
 export const config = {
