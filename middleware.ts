@@ -10,10 +10,7 @@ const isPublicRoute = createRouteMatcher([
 export default clerkMiddleware(async (auth, req) => {
   // Tất cả các route khác đều yêu cầu xác thực
   if (!isPublicRoute(req)) {
-    const { userId } = await auth()
-    if (!userId) {
-      return auth.redirectToSignIn()
-    }
+    await auth.protect()
   }
 })
 
