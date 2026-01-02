@@ -94,3 +94,41 @@ export interface GradingResult {
   score: number;
   feedback?: string;
 }
+
+// Writing Check Result
+export interface WritingCheckResult {
+  success: boolean;
+  score: number;
+  totalWords: number;
+  errorCount: number;
+  grammarErrors: number;
+  spellingErrors: number;
+  styleErrors: number;
+  feedbackLevel: 'excellent' | 'good' | 'fair' | 'needs-improvement';
+  feedbackMessage: string;
+  matches: LanguageToolMatch[];
+  language?: any;
+}
+
+// LanguageTool Match (Error)
+export interface LanguageToolMatch {
+  message: string;
+  shortMessage?: string;
+  offset: number;
+  length: number;
+  replacements: Array<{ value: string }>;
+  context: {
+    text: string;
+    offset: number;
+    length: number;
+  };
+  rule: {
+    id: string;
+    description: string;
+    issueType?: string;
+    category: {
+      id: string;
+      name: string;
+    };
+  };
+}

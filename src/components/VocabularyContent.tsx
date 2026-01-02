@@ -141,22 +141,26 @@ export default function VocabularyContent() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8">
-      <h2 className="text-3xl font-bold mb-6 text-gray-800">📖 Từ Vựng Tiếng Anh</h2>
-      <p className="text-gray-600 mb-6">Học từ vựng theo cấp độ và chủ đề từ Dictionary API</p>
+    <div className="rounded-xl p-8">
+      <div className="text-center mb-8">
+        <h2 className="text-4xl font-bold mb-4 text-[#8B0000]" style={{textShadow: '2px 2px 4px rgba(139,0,0,0.3)'}}>
+          📖 Từ Vựng Tiếng Anh
+        </h2>
+        <p className="text-gray-700 text-lg">Học từ vựng theo cấp độ và chủ đề từ Dictionary API</p>
+      </div>
 
       {/* Level Selection */}
-      <div className="mb-6">
-        <h3 className="font-semibold text-gray-700 mb-3">📊 Chọn Cấp Độ:</h3>
-        <div className="flex gap-3 flex-wrap">
+      <div className="mb-8">
+        <h3 className="font-bold text-xl mb-4 text-[#8B0000]">📊 Chọn Cấp Độ:</h3>
+        <div className="flex gap-4 flex-wrap">
           {(Object.keys(WORD_BANK) as Array<keyof typeof WORD_BANK>).map((level) => (
             <button
               key={level}
               onClick={() => setSelectedLevel(level)}
-              className={`py-2 px-6 rounded-lg font-bold transition ${
+              className={`py-3 px-8 rounded-lg font-bold transition-all duration-300 ${
                 selectedLevel === level
-                  ? 'bg-blue-600 text-white shadow-lg'
-                  : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-blue-400'
+                  ? 'bg-gradient-to-br from-[#8B0000] to-[#A50000] text-[#FFD700] shadow-[0_0_20px_rgba(255,215,0,0.5)] border-2 border-[#FFD700] scale-105'
+                  : 'bg-white text-[#8B0000] border-3 border-[#8B0000] hover:border-[#FFD700] hover:shadow-lg hover:scale-105'
               }`}
             >
               {level}
@@ -166,9 +170,9 @@ export default function VocabularyContent() {
       </div>
 
       {/* Topic Selection */}
-      <div className="mb-6">
-        <h3 className="font-semibold text-gray-700 mb-3">🎯 Chọn Chủ Đề:</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+      <div className="mb-8">
+        <h3 className="font-bold text-xl mb-4 text-[#8B0000]">🎯 Chọn Chủ Đề:</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {Object.keys(WORD_BANK[selectedLevel]).map((topic) => {
             const topicInfo = TOPICS[topic]
             const topicProgress = progress.find(p => p.level === selectedLevel && p.topic === topic)
@@ -177,19 +181,19 @@ export default function VocabularyContent() {
               <button
                 key={topic}
                 onClick={() => setSelectedTopic(topic)}
-                className={`p-4 rounded-lg font-semibold transition text-left relative ${
+                className={`p-5 rounded-xl font-semibold transition-all duration-300 text-left relative ${
                   selectedTopic === topic
-                    ? 'bg-purple-600 text-white shadow-lg'
-                    : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-purple-400'
+                    ? 'bg-gradient-to-br from-[#8B0000] to-[#A50000] text-[#FFD700] shadow-[0_0_20px_rgba(255,215,0,0.5)] border-3 border-[#FFD700] scale-105'
+                    : 'bg-white/90 backdrop-blur-sm text-[#8B0000] border-3 border-[#8B0000] hover:border-[#FFD700] hover:shadow-lg hover:scale-105'
                 }`}
               >
                 {topicProgress && (
-                  <div className="absolute top-2 right-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-full">
+                  <div className="absolute -top-2 -right-2 bg-[#FFD700] text-[#8B0000] text-xs font-bold px-3 py-1.5 rounded-full shadow-lg border-2 border-[#8B0000]">
                     ⭐ {Math.round((topicProgress.score / topicProgress.total) * 100)}%
                   </div>
                 )}
-                <div className="text-sm font-bold mb-1">{topicInfo.name}</div>
-                <div className="text-xs opacity-75">{topicInfo.description}</div>
+                <div className="text-base font-bold mb-1">{topicInfo.name}</div>
+                <div className="text-sm opacity-90">{topicInfo.description}</div>
               </button>
             )
           })}
@@ -198,62 +202,62 @@ export default function VocabularyContent() {
 
       {/* Loading State */}
       {loading && (
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600">Đang tải từ vựng từ API...</p>
+        <div className="text-center py-16">
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-[#8B0000]"></div>
+          <p className="mt-6 text-[#8B0000] text-lg font-semibold">Đang tải từ vựng từ API...</p>
         </div>
       )}
 
       {/* Vocabulary List */}
       {!loading && vocabularyList.length > 0 && (
-        <div className="bg-white rounded-lg p-6 border-2 border-gray-200">
-          <h3 className="text-2xl font-bold mb-4 text-gray-800">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 border-4 border-[#8B0000] shadow-xl">
+          <h3 className="text-3xl font-bold mb-2 text-[#8B0000]" style={{textShadow: '1px 1px 2px rgba(139,0,0,0.2)'}}>
             {TOPICS[selectedTopic]?.name} - {selectedLevel}
           </h3>
-          <p className="text-gray-600 mb-6">Hiển thị {vocabularyList.length} từ vựng</p>
+          <p className="text-gray-700 mb-8 text-lg">Hiển thị {vocabularyList.length} từ vựng</p>
 
-          <div className="space-y-4">
+          <div className="space-y-5">
             {vocabularyList.map((vocab, index) => (
               <div
                 key={index}
-                className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4 hover:shadow-md transition"
+                className="bg-gradient-to-br from-white to-[#FFF5D7] border-3 border-[#8B0000] rounded-xl p-6 hover:shadow-[0_0_20px_rgba(139,0,0,0.3)] transition-all duration-300 hover:scale-[1.02]"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h4 className="text-xl font-bold text-blue-600">{vocab.word}</h4>
+                    <div className="flex items-center gap-3 mb-3 flex-wrap">
+                      <h4 className="text-2xl font-bold text-[#8B0000]">{vocab.word}</h4>
                       {vocab.phonetic && (
-                        <span className="text-gray-500 italic">{vocab.phonetic}</span>
+                        <span className="text-gray-600 italic text-lg">{vocab.phonetic}</span>
                       )}
                       {vocab.audio && (
                         <button
                           onClick={() => playAudio(vocab.audio!)}
-                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-full text-sm transition"
+                          className="bg-gradient-to-r from-[#8B0000] to-[#A50000] hover:from-[#A50000] hover:to-[#8B0000] text-[#FFD700] px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 shadow-lg hover:shadow-[0_0_15px_rgba(255,215,0,0.5)] border-2 border-[#FFD700]"
                         >
                           🔊 Nghe
                         </button>
                       )}
                       {vocab.partOfSpeech && (
-                        <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs font-semibold">
+                        <span className="bg-[#FFD700] text-[#8B0000] px-3 py-1.5 rounded-full text-sm font-bold border-2 border-[#8B0000]">
                           {vocab.partOfSpeech}
                         </span>
                       )}
                     </div>
                     
-                    <div className="text-green-600 font-semibold mb-2">
+                    <div className="text-[#8B0000] font-bold mb-3 text-lg">
                       🇻🇳 {vocab.vietnamese}
                     </div>
 
                     {expandedWord === vocab.word && (
                       <>
-                        <div className="bg-white p-3 rounded-lg mb-2 border-l-4 border-blue-500">
-                          <p className="text-sm text-gray-700">
-                            <strong>Definition:</strong> {vocab.definition}
+                        <div className="bg-white p-4 rounded-xl mb-3 border-l-4 border-[#8B0000] shadow-md">
+                          <p className="text-base text-gray-800">
+                            <strong className="text-[#8B0000]">Definition:</strong> {vocab.definition}
                           </p>
                         </div>
-                        <div className="bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-500">
-                          <p className="text-sm text-gray-700">
-                            <strong>Example:</strong> <em>{vocab.example}</em>
+                        <div className="bg-[#FFF5D7] p-4 rounded-xl border-l-4 border-[#FFD700] shadow-md">
+                          <p className="text-base text-gray-800">
+                            <strong className="text-[#8B0000]">Example:</strong> <em>{vocab.example}</em>
                           </p>
                         </div>
                       </>
@@ -262,7 +266,7 @@ export default function VocabularyContent() {
 
                   <button
                     onClick={() => toggleWordExpansion(vocab.word)}
-                    className="ml-4 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition text-sm font-semibold"
+                    className="ml-4 bg-gradient-to-br from-[#8B0000] to-[#A50000] hover:from-[#A50000] hover:to-[#8B0000] text-[#FFD700] px-5 py-3 rounded-xl transition-all duration-300 text-sm font-bold shadow-lg hover:shadow-[0_0_15px_rgba(255,215,0,0.5)] border-2 border-[#FFD700]"
                   >
                     {expandedWord === vocab.word ? '▲ Thu gọn' : '▼ Xem thêm'}
                   </button>
@@ -273,15 +277,15 @@ export default function VocabularyContent() {
 
           {/* Practice Button */}
           {vocabularyList.length >= 4 && (
-            <div className="mt-6 text-center">
+            <div className="mt-8 text-center">
               <Link
                 href={`/vocabulary/practice/${selectedLevel}/${selectedTopic}`}
-                className="inline-block bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-8 py-4 rounded-lg font-bold text-lg shadow-lg transition"
+                className="inline-block bg-gradient-to-r from-[#8B0000] via-[#A50000] to-[#8B0000] hover:from-[#A50000] hover:via-[#8B0000] hover:to-[#A50000] text-[#FFD700] px-10 py-5 rounded-2xl font-bold text-xl shadow-[0_0_25px_rgba(255,215,0,0.6)] transition-all duration-300 hover:scale-110 border-4 border-[#FFD700]"
               >
                 ✏️ Luyện Tập ({Math.min(10, vocabularyList.length)} câu hỏi)
               </Link>
               {getTopicProgress() && (
-                <div className="mt-3 text-sm text-gray-600">
+                <div className="mt-4 text-base text-[#8B0000] font-semibold">
                   ⭐ Lần trước: {getTopicProgress()!.score}/{getTopicProgress()!.total} điểm 
                   ({Math.round((getTopicProgress()!.score / getTopicProgress()!.total) * 100)}%)
                 </div>
@@ -293,10 +297,10 @@ export default function VocabularyContent() {
 
       {/* Empty State */}
       {!loading && vocabularyList.length === 0 && selectedTopic && (
-        <div className="bg-white rounded-lg p-12 text-center border-2 border-gray-200">
-          <div className="text-6xl mb-4">📚</div>
-          <h3 className="text-xl font-bold text-gray-800 mb-2">Chưa có từ vựng</h3>
-          <p className="text-gray-600">Vui lòng chọn chủ đề khác</p>
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-16 text-center border-4 border-[#8B0000] shadow-xl">
+          <div className="text-7xl mb-6">📚</div>
+          <h3 className="text-2xl font-bold text-[#8B0000] mb-3">Chưa có từ vựng</h3>
+          <p className="text-gray-700 text-lg">Vui lòng chọn chủ đề khác</p>
         </div>
       )}
     </div>

@@ -16,21 +16,33 @@ export default function SpeakingPage() {
   const filteredItems = allItems.filter(item => item.level === selectedLevel)
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <nav className="bg-amber-900 shadow-lg sticky top-0 z-50">
+    <div className="min-h-screen flex flex-col bg-[#FFF5D7]">
+      {/* --- CÁC HOẠT TIẾT TRANG TRÍ NỀN --- */}
+      <div className="absolute top-0 -left-10 w-[300px] h-[300px] opacity-90 pointer-events-none z-0">
+        <img src="/top_left.png" alt="Blossom" className="w-full h-full object-contain drop-shadow-lg" />
+      </div>
+      <div className="absolute top-20 right-0 w-64 h-64 opacity-90 pointer-events-none z-0">
+        <img src="/top_right.png" alt="Lantern decoration" className="w-full h-full object-contain drop-shadow-lg" />
+      </div>
+
+      <nav className="bg-[#8B0000] text-[#FFD700] shadow-lg sticky top-0 z-50 border-b-4 border-[#FFD700] relative z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-2">
-              <Link href="/" className="text-2xl font-bold text-white hover:text-yellow-300">SSL English</Link>
-            </div>
-            <ul className="hidden md:flex space-x-8 text-white">
-              <li><Link href="/" className="hover:text-yellow-300 transition">Trang chủ</Link></li>
-              <li><Link href="/vocabulary" className="hover:text-yellow-300 transition">Từ vựng</Link></li>
-              <li><Link href="/pronunciation" className="hover:text-yellow-300 transition">Phát âm</Link></li>
-              <li><Link href="/skills" className="text-yellow-300 font-bold">Kỹ năng</Link></li>
-              <li><Link href="/test" className="hover:text-yellow-300 transition">Bài kiểm tra</Link></li>
-              <li><Link href="/roadmap" className="hover:text-yellow-300 transition">Lộ trình học</Link></li>
+          <div className="flex justify-between items-center h-20">
+            <Link href="/" className="flex items-center gap-2 cursor-pointer">
+              <div className="bg-red-700 p-2 rounded-lg shadow-lg border border-yellow-400">
+                <h1 className="font-extrabold text-2xl tracking-wide text-yellow-400">SSL English</h1>
+              </div>
+            </Link>
+            
+            <ul className="hidden lg:flex space-x-6 items-center font-bold text-sm">
+              <li><Link href="/" className="hover:text-white transition py-2">TRANG CHỦ</Link></li>
+              <li><Link href="/vocabulary" className="hover:text-white transition py-2">TỮ VỰNG</Link></li>
+              <li><Link href="/pronunciation" className="hover:text-white transition py-2">PHÁT ÂM</Link></li>
+              <li><Link href="/skills" className="hover:text-white transition py-2 border-b-2 border-white">KỸ NĂNG</Link></li>
+              <li><Link href="/test" className="hover:text-white transition py-2">BÀI KIỂM TRA</Link></li>
+              <li><Link href="/roadmap" className="hover:text-white transition py-2">LỘ TRÌNH</Link></li>
             </ul>
+
             <div className="flex items-center gap-4">
               <AuthButton />
             </div>
@@ -38,11 +50,11 @@ export default function SpeakingPage() {
         </div>
       </nav>
 
-      <main className="flex-1 max-w-7xl mx-auto px-4 py-16 w-full">
+      <main className="flex-1 max-w-7xl mx-auto px-4 py-16 w-full relative z-10">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-bold text-gray-800">🗣️ Kỹ Năng Nói (Speaking)</h1>
+          <h1 className="text-4xl font-bold text-[#8B0000]" style={{textShadow: '2px 2px 4px rgba(139,0,0,0.2)'}}>🗣️ Kỹ Năng Nói (Speaking)</h1>
           <Link href="/skills">
-            <button className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-lg transition">
+            <button className="bg-gradient-to-r from-[#8B0000] to-[#A50000] hover:from-[#A50000] hover:to-[#8B0000] text-[#FFD700] px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-[0_0_15px_rgba(255,215,0,0.5)] transition-all duration-300 border-2 border-[#FFD700]">
               ← Quay lại
             </button>
           </Link>
@@ -85,14 +97,6 @@ export default function SpeakingPage() {
                   <div>
                     <h3 className="text-2xl font-bold text-orange-600 mb-1">{item.title}</h3>
                     <p className="text-gray-600">{item.description}</p>
-                  </div>
-                  <div className="text-right">
-                    <span className="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold mr-2">
-                      {item.level}
-                    </span>
-                    <span className="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
-                      ⏱️ {item.duration}
-                    </span>
                   </div>
                 </div>
 

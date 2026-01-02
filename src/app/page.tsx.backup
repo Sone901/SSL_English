@@ -1,0 +1,109 @@
+'use client'
+
+import Link from 'next/link'
+import AuthButton from '@/components/AuthButton'
+import { useEffect } from 'react'
+
+export default function Home() {
+
+  useEffect(() => {
+    // Create flower elements dynamically
+    const flowersContainer = document.createElement('div')
+    flowersContainer.className = 'flowers-container'
+    flowersContainer.setAttribute('aria-hidden', 'true')
+    
+    for (let i = 0; i < 12; i++) {
+      const flower = document.createElement('img')
+      flower.src = '/flower.svg'
+      flower.alt = ''
+      flower.className = 'flower'
+      flower.style.left = `${(i * 8) + 5}%`
+      flower.style.animationDelay = `${Math.random() * 8}s, ${Math.random() * 3}s`
+      flowersContainer.appendChild(flower)
+    }
+    
+    document.body.appendChild(flowersContainer)
+    
+    return () => {
+      if (flowersContainer.parentNode) {
+        flowersContainer.parentNode.removeChild(flowersContainer)
+      }
+    }
+  }, [])
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* Navigation */}
+      <nav className="bg-amber-900 shadow-lg sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold text-white">SSL English</h1>
+            </div>
+            <ul className="hidden md:flex space-x-8 text-white">
+              <li><Link href="/" className="hover:text-yellow-300 transition">Trang chủ</Link></li>
+              <li><Link href="/vocabulary" className="hover:text-yellow-300 transition">Từ vựng</Link></li>
+              <li><Link href="/pronunciation" className="hover:text-yellow-300 transition">Phát âm</Link></li>
+              <li><Link href="/skills" className="hover:text-yellow-300 transition">Kỹ năng</Link></li>
+              <li><Link href="/test" className="hover:text-yellow-300 transition">Bài kiểm tra</Link></li>
+              <li><Link href="/roadmap" className="hover:text-yellow-300 transition">Lộ trình học</Link></li>
+            </ul>
+            <div className="flex items-center gap-4">
+              <AuthButton />
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section with Background Image */}
+      <section 
+        className="text-white py-24 px-4 relative overflow-hidden"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(220, 38, 38, 0.6) 0%, rgba(249, 115, 22, 0.6) 50%, rgba(234, 179, 8, 0.6) 100%), url('/image1.png')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-red-600/20 via-transparent to-yellow-500/20 pointer-events-none"></div>
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h2 className="text-5xl font-bold mb-4 drop-shadow-lg">Năm Mới Bính Ngọ 2026</h2>
+          <p className="text-xl mb-8 drop-shadow">Năm mới, mục tiêu mới. Cùng SSL English học tiếng Anh</p>
+          <Link href="/skills">
+            <button className="bg-red-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-red-700 transition shadow-lg transform hover:scale-105">
+              🚀 Bắt đầu học ngay
+            </button>
+          </Link>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <main className="max-w-7xl mx-auto px-4 py-20 w-full">
+        <h2 className="text-4xl font-bold text-center mb-16 text-gray-800">Các chủ đề học tập (24 bài học)</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {[
+            { icon: '👂', title: 'Nghe', desc: '6 bài học - Phát triển kỹ năng nghe hiểu qua các bài tập thực tế', href: '/skills' },
+            { icon: '🗣️', title: 'Nói', desc: '6 bài học - Rèn luyện kỹ năng nói tiếng Anh tự tin và trôi chảy', href: '/skills' },
+            { icon: '📖', title: 'Đọc', desc: '6 bài học - Tăng tốc độ đọc và hiểu sâu các đoạn văn tiếng Anh', href: '/skills' },
+            { icon: '✍️', title: 'Viết', desc: '6 bài học - Cải thiện kỹ năng viết tiếng Anh qua các bài tập sáng tạo', href: '/skills' },
+          ].map((skill, idx) => (
+            <div key={idx} className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-8 hover:shadow-lg transition text-center">
+              <div className="text-6xl mb-4">{skill.icon}</div>
+              <h3 className="text-2xl font-bold mb-3 text-gray-800">{skill.title}</h3>
+              <p className="text-gray-600 mb-6">{skill.desc}</p>
+              <Link href={skill.href} className="text-red-600 font-bold border-2 border-red-600 px-6 py-2 rounded hover:bg-red-600 hover:text-white transition inline-block">
+                Khám phá
+              </Link>
+            </div>
+          ))}
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-800 text-white text-center py-8 mt-auto w-full">
+        <p>&copy; 2026 SSL English Platform. All rights reserved.</p>
+        <p className="text-sm mt-2">Contact: contact@sslenglish.com</p>
+      </footer>
+    </div>
+  )
+}

@@ -9,3 +9,14 @@ dist/
 .env.*.local
 .vercel/
 *.log
+
+# Excel temporary files
+~$*.xlsx
+~$*.xls
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

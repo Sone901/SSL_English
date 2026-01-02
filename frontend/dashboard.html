@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky English - Học Tiếng Anh Đón Tết</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Font chữ đẹp hơn */
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+        body { font-family: 'Nunito', sans-serif; }
+        
+        /* Gradient Tết */
+        .bg-tet { background: linear-gradient(135deg, #b91c1c 0%, #ea580c 100%); }
+        
+        /* Hiệu ứng Dropdown Navbar */
+        .nav-item:hover .dropdown-menu { 
+            display: block; 
+            animation: fadeIn 0.2s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Thanh cuộn đẹp */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #ea580c; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+
+    <nav class="bg-gray-900 text-white sticky top-0 z-50 shadow-xl border-b-4 border-yellow-500">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-20">
+                
+                <div class="flex items-center space-x-2 cursor-pointer" onclick="showSection('home')">
+                    <div class="bg-red-600 p-2 rounded-lg shadow-lg border border-yellow-400">
+                        <i class="fas fa-horse-head text-yellow-400 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-extrabold text-2xl tracking-wide text-yellow-400">Lucky English</h1>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-widest">Learn & Shine</p>
+                    </div>
+                </div>
+
+                <div class="hidden lg:flex space-x-6 items-center font-bold text-sm">
+                    <a href="#" onclick="showSection('home')" class="hover:text-yellow-400 transition py-2 border-b-2 border-transparent hover:border-yellow-400">TRANG CHỦ</a>
+                    
+                    <div class="relative group nav-item py-6 cursor-pointer">
+                        <span class="hover:text-yellow-400 flex items-center">TỪ VỰNG <i class="fas fa-chevron-down ml-1 text-xs opacity-70"></i></span>
+                        <div class="dropdown-menu hidden absolute top-full left-0 w-60 bg-white text-gray-800 shadow-2xl rounded-b-xl border-t-4 border-red-600 overflow-hidden z-50">
+                            <a href="#" id="navDailyWord" class="block px-4 py-3 hover:bg-red-50 hover:text-red-600 border-b border-gray-100 transition">
+                                <i class="fas fa-random mr-3 text-orange-500"></i> Học 10 từ hôm nay
+                            </a>
+                            <a href="#" onclick="showSection('vocab')" class="block px-4 py-3 hover:bg-red-50 hover:text-red-600 transition">
+                                <i class="fas fa-book mr-3 text-red-500"></i> Kho từ vựng
+                            </a>
+                        </div>
+                    </div>
+
+                    <a href="#" class="hover:text-yellow-400 transition py-2 opacity-70 cursor-not-allowed">NGỮ PHÁP</a>
+                    <a href="#" class="hover:text-yellow-400 transition py-2 opacity-70 cursor-not-allowed">PHÁT ÂM</a>
+
+                    <div class="relative group nav-item py-6 cursor-pointer">
+                        <span class="hover:text-yellow-400 flex items-center">KỸ NĂNG <i class="fas fa-chevron-down ml-1 text-xs opacity-70"></i></span>
+                        <div class="dropdown-menu hidden absolute top-full left-0 w-60 bg-white text-gray-800 shadow-2xl rounded-b-xl border-t-4 border-red-600 overflow-hidden z-50">
+    
+    <a href="listening.html" class="block px-4 py-3 hover:bg-red-50 hover:text-red-600 border-b border-gray-100">
+        <i class="fas fa-headphones mr-3 text-blue-500"></i> Luyện Nghe
+    </a>
+    
+    <a href="#" class="block px-4 py-3 hover:bg-red-50 hover:text-red-600">
+        <i class="fas fa-book-open mr-3 text-green-500"></i> Luyện Đọc
+    </a>
+</div>
+                    </div>
+
+                    <a href="#" class="hover:text-yellow-400 transition py-2 opacity-70">BÀI KIỂM TRA</a>
+                    <a href="#" class="hover:text-yellow-400 transition py-2 opacity-70">LỘ TRÌNH</a>
+                </div>
+
+                <div class="relative group nav-item py-6">
+                    <button class="bg-yellow-500 hover:bg-yellow-400 text-red-900 px-5 py-2 rounded-full font-bold transition flex items-center shadow-lg transform hover:scale-105">
+                        <i class="fas fa-user-circle mr-2 text-xl"></i> Tài khoản
+                    </button>
+                    <div class="dropdown-menu hidden absolute top-full right-0 w-64 bg-white text-gray-800 shadow-2xl rounded-b-xl border-t-4 border-red-600 z-50">
+                         <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                             <p class="text-xs text-gray-500 uppercase font-bold">Xin chào,</p>
+                             <p class="font-bold text-lg text-red-600 truncate" id="navUserName">User</p>
+                         </div>
+                        <a href="#" id="logoutBtn" class="block px-6 py-3 hover:bg-red-50 hover:text-red-600 font-bold transition">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="homeSection" class="flex-1 pb-16 animate-fade-in">
+        
+        <div class="bg-tet text-white py-16 md:py-24 relative overflow-hidden shadow-md">
+            <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+            <i class="fas fa-star text-yellow-300 absolute top-10 right-20 text-4xl animate-pulse"></i>
+            <i class="fas fa-star text-yellow-300 absolute bottom-10 left-20 text-2xl animate-pulse" style="animation-delay: 1s;"></i>
+
+            <div class="container mx-auto px-4 text-center relative z-10">
+                <div class="inline-block bg-white/20 backdrop-blur-sm px-4 py-1 rounded-full text-yellow-300 text-sm font-bold mb-4 border border-yellow-300/30">
+                    <i class="fas fa-sun mr-2"></i> Chúc Mừng Năm Mới
+                </div>
+                <h1 class="text-4xl md:text-7xl font-extrabold mb-6 drop-shadow-md">Năm Mới Bính Ngọ 2026</h1>
+                <p class="text-xl md:text-2xl text-orange-100 mb-10 max-w-2xl mx-auto font-light">
+                    Năm mới, mục tiêu mới. Cùng <span class="font-bold text-yellow-300">Lucky English</span> chinh phục đỉnh cao tiếng Anh!
+                </p>
+                <button id="bannerStartBtn" class="bg-yellow-400 text-red-700 font-extrabold py-4 px-10 rounded-full shadow-xl hover:bg-yellow-300 hover:shadow-2xl hover:-translate-y-1 transition transform duration-300 flex items-center mx-auto">
+                    <i class="fas fa-rocket mr-3"></i> Bắt đầu học ngay
+                </button>
+            </div>
+            
+            <i class="fas fa-horse text-white opacity-10 text-9xl absolute bottom-0 right-10 transform translate-y-1/4 rotate-12"></i>
+        </div>
+
+        <div class="container mx-auto px-4 mt-8 relative z-20">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <div class="lg:col-span-1 space-y-6">
+                    
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 border-t-8 border-t-red-500 relative overflow-hidden group hover:shadow-2xl transition">
+                        <div class="absolute -right-6 -top-6 bg-red-100 w-24 h-24 rounded-full group-hover:scale-150 transition duration-500"></div>
+                        <span class="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md z-10">Mới</span>
+                        
+                        <p class="text-gray-400 text-sm font-bold uppercase tracking-wider mb-2">Từ của ngày</p>
+                        <h2 class="text-4xl font-extrabold text-gray-800 mb-1 break-words" id="wotdWord">...</h2>
+                        <p class="text-gray-500 italic mb-4 text-lg font-serif" id="wotdPronun">/../</p>
+                        
+                        <div class="bg-red-50 p-4 rounded-xl border border-red-100 mb-4">
+                            <p class="text-gray-800 font-medium" id="wotdMeaning">Đang tải...</p>
+                        </div>
+                        
+                        <a href="#" class="text-red-600 font-bold hover:text-red-700 flex items-center group-hover:translate-x-2 transition">
+                            Chi tiết <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                        <div class="flex items-center mb-6">
+                            <div class="bg-green-100 p-2 rounded-lg text-green-600 mr-3">
+                                <i class="fas fa-calendar-check text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-lg">Điểm danh tháng</h3>
+                                <p class="text-xs text-gray-400">Tiến độ học tập của bạn</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                            <div class="grid grid-cols-7 gap-2 mb-2 text-center">
+                                <span class="text-xs font-bold text-gray-400">S</span>
+                                <span class="text-xs font-bold text-gray-400">M</span>
+                                <span class="text-xs font-bold text-gray-400">T</span>
+                                <span class="text-xs font-bold text-gray-400">W</span>
+                                <span class="text-xs font-bold text-gray-400">T</span>
+                                <span class="text-xs font-bold text-gray-400">F</span>
+                                <span class="text-xs font-bold text-gray-400">S</span>
+                            </div>
+                            <div class="grid grid-cols-7 gap-2" id="calendarGrid">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2">
+                    
+                    <div class="flex items-center mb-6 px-2">
+                        <div class="bg-yellow-500 w-2 h-8 rounded-full mr-3"></div>
+                        <h2 class="text-2xl font-extrabold text-gray-800 uppercase tracking-wide">Gợi ý hôm nay</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div id="suggestDailyBtn" class="bg-white p-6 rounded-2xl shadow-md border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition cursor-pointer group hover:border-orange-300">
+                            <div class="flex items-center">
+                                <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center text-white text-3xl mr-5 shadow-lg group-hover:rotate-12 transition">
+                                    <i class="fas fa-random"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-xl text-gray-800 group-hover:text-orange-600 transition">10 Từ Ngẫu Nhiên</h4>
+                                    <p class="text-sm text-gray-500 mt-1">Thử thách mỗi ngày</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition cursor-pointer group hover:border-green-300">
+                            <div class="flex items-center">
+                                <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-600 rounded-2xl flex items-center justify-center text-white text-3xl mr-5 shadow-lg group-hover:rotate-12 transition">
+                                    <i class="fas fa-headphones-alt"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-xl text-gray-800 group-hover:text-green-600 transition">Kỹ Năng Nghe</h4>
+                                    <p class="text-sm text-gray-500 mt-1">Luyện nghe cơ bản</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition cursor-pointer group hover:border-purple-300">
+                            <div class="flex items-center">
+                                <div class="w-16 h-16 bg-gradient-to-br from-purple-400 to-indigo-600 rounded-2xl flex items-center justify-center text-white text-3xl mr-5 shadow-lg group-hover:rotate-12 transition">
+                                    <i class="fas fa-book-open"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-xl text-gray-800 group-hover:text-purple-600 transition">Kỹ Năng Đọc</h4>
+                                    <p class="text-sm text-gray-500 mt-1">Đọc hiểu văn bản</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition cursor-pointer group hover:border-blue-300">
+                            <div class="flex items-center">
+                                <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center text-white text-3xl mr-5 shadow-lg group-hover:rotate-12 transition">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-xl text-gray-800 group-hover:text-blue-600 transition">IELTS Topic</h4>
+                                    <p class="text-sm text-gray-500 mt-1">12 Chủ đề từ vựng</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="font-extrabold text-gray-800 text-lg">
+            <i class="fas fa-chart-bar text-blue-500 mr-2"></i>Hoạt động (Activity)
+        </h3>
+    </div>
+
+    <div class="relative h-64 w-full">
+        <canvas id="activityChart"></canvas>
+    </div>
+
+    <p class="text-center text-xs text-gray-400 mt-4 italic">
+        Dữ liệu tự động cập nhật mỗi phút.
+    </p>
+</div>
+
+                </div> </div>
+        </div>
+    </div>
+
+    <div id="vocabSection" class="hidden flex-1 container mx-auto px-4 py-10 animate-fade-in">
+        
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-3xl font-extrabold text-gray-800 border-l-8 border-red-500 pl-4">Kho Từ Vựng</h2>
+            <button onclick="showSection('home')" class="text-gray-500 hover:text-red-500 font-bold transition flex items-center bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200">
+                <i class="fas fa-arrow-left mr-2"></i> Quay lại
+            </button>
+        </div>
+        
+        <div class="bg-white p-8 rounded-2xl shadow-lg mb-8 border border-gray-100">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Tìm kiếm</label>
+                    <div class="relative group">
+                        <i class="fas fa-search absolute left-4 top-4 text-gray-400 group-focus-within:text-red-500 transition"></i>
+                        <input type="text" id="searchWordInput" class="w-full pl-12 p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition" placeholder="Nhập từ tiếng Anh hoặc nghĩa tiếng Việt...">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Tra từ nhanh (Dictionary)</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="translateInput" class="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Nhập từ cần tra...">
+                        <button onclick="mockTranslate()" class="bg-blue-600 text-white px-6 rounded-xl font-bold hover:bg-blue-700 shadow-md transition">Tra cứu</button>
+                    </div>
+                    <div id="translateResult" class="mt-2 text-sm font-medium text-green-600 min-h-[24px]"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-red-50 text-red-800 uppercase text-xs font-bold tracking-wider border-b border-red-100">
+                        <tr>
+                            <th class="p-5">Từ vựng</th>
+                            <th class="p-5">Phiên âm</th>
+                            <th class="p-5">Loại từ</th>
+                            <th class="p-5">Nghĩa tiếng Việt</th>
+                            <th class="p-5 hidden md:table-cell">Ví dụ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vocabTableBody" class="divide-y divide-gray-100">
+                        <tr><td colspan="5" class="p-10 text-center text-gray-400">Đang tải dữ liệu...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-900 text-gray-400 py-8 mt-auto border-t border-gray-800">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2026 Lucky English. Thiết kế cho năm mới thành công!</p>
+        </div>
+    </footer>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

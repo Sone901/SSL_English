@@ -1,0 +1,254 @@
+'use client'
+
+import Link from 'next/link'
+import AuthButton from '@/components/AuthButton'
+import { useState, useRef } from 'react'
+
+interface SpeechRecognitionResult {
+  word: string
+  phonetic: string
+  transcript: string
+  accuracy: number
+  feedback: string
+}
+
+export default function PronunciationPage() {
+  const [selectedCourse, setSelectedCourse] = useState<number | null>(null)
+  const [currentWordIndex, setCurrentWordIndex] = useState(0)
+
+  const courseData = [
+    { 
+      id: 1, 
+      title: 'Âm Vị Tiếng Anh', 
+      lessons: 8, 
+      desc: 'Các âm cơ bản trong tiếng Anh',
+      words: [
+        { word: 'apple', phonetic: '/ˈæpl/', description: 'Âm /æ/ - như trong "cat"' },
+        { word: 'eat', phonetic: '/iːt/', description: 'Âm /iː/ - như trong "see"' },
+        { word: 'book', phonetic: '/bʊk/', description: 'Âm /ʊ/ - như trong "put"' },
+        { word: 'cat', phonetic: '/kæt/', description: 'Âm /æ/ - như trong "apple"' },
+        { word: 'dog', phonetic: '/dɔːɡ/', description: 'Âm /ɔː/ - như trong "ball"' },
+        { word: 'up', phonetic: '/ʌp/', description: 'Âm /ʌ/ - như trong "love"' },
+        { word: 'about', phonetic: '/əˈbaʊt/', description: 'Âm /ə/ - schwa sound' },
+        { word: 'ear', phonetic: '/ɪr/', description: 'Âm /ɪ/ - như trong "sit"' },
+      ]
+    },
+    { 
+      id: 2, 
+      title: 'Phát Âm Nguyên Âm', 
+      lessons: 6, 
+      desc: 'Luyện phát âm các nguyên âm',
+      words: [
+        { word: 'be', phonetic: '/biː/', description: 'Nguyên âm dài /iː/' },
+        { word: 'sit', phonetic: '/sɪt/', description: 'Nguyên âm ngắn /ɪ/' },
+        { word: 'set', phonetic: '/set/', description: 'Nguyên âm /e/' },
+        { word: 'sat', phonetic: '/sæt/', description: 'Nguyên âm /æ/' },
+        { word: 'boat', phonetic: '/boʊt/', description: 'Nguyên âm dài /oʊ/' },
+        { word: 'but', phonetic: '/bʌt/', description: 'Nguyên âm /ʌ/' },
+      ]
+    },
+    { 
+      id: 3, 
+      title: 'Phát Âm Phụ Âm', 
+      lessons: 7, 
+      desc: 'Luyện phát âm các phụ âm',
+      words: [
+        { word: 'think', phonetic: '/θɪŋk/', description: 'Phụ âm /θ/ - như "th" trong "thing"' },
+        { word: 'this', phonetic: '/ðɪs/', description: 'Phụ âm /ð/ - như "th" trong "the"' },
+        { word: 'ship', phonetic: '/ʃɪp/', description: 'Phụ âm /ʃ/ - như "sh"' },
+        { word: 'measure', phonetic: '/ˈmeʒər/', description: 'Phụ âm /ʒ/ - như "s" trong "measure"' },
+        { word: 'choose', phonetic: '/tʃuːz/', description: 'Phụ âm /tʃ/ - như "ch"' },
+        { word: 'jungle', phonetic: '/ˈdʒʌŋɡəl/', description: 'Phụ âm /dʒ/ - như "j"' },
+        { word: 'sing', phonetic: '/sɪŋ/', description: 'Phụ âm /ŋ/ - như "ng"' },
+      ]
+    },
+  ]
+
+  if (selectedCourse) {
+    const course = courseData.find(c => c.id === selectedCourse)
+    if (course) {
+      const currentWord = course.words[currentWordIndex]
+      return (
+        <div className="min-h-screen flex flex-col">
+          {/* Navigation */}
+          <nav className="bg-amber-900 shadow-lg sticky top-0 z-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex justify-between items-center h-16">
+                <div className="flex items-center gap-2">
+                  <Link href="/" className="text-2xl font-bold text-white hover:text-yellow-300">SSL English</Link>
+                </div>
+                <ul className="hidden md:flex space-x-8 text-white">
+                  <li><Link href="/" className="hover:text-yellow-300 transition">Trang chủ</Link></li>
+                  <li><Link href="/vocabulary" className="hover:text-yellow-300 transition">Từ vựng</Link></li>
+                  <li><Link href="/pronunciation" className="text-yellow-300 font-bold">Phát âm</Link></li>
+                  <li><Link href="/skills" className="hover:text-yellow-300 transition">Kỹ năng</Link></li>
+                  <li><Link href="/test" className="hover:text-yellow-300 transition">Bài kiểm tra</Link></li>
+                  <li><Link href="/roadmap" className="hover:text-yellow-300 transition">Lộ trình học</Link></li>
+                </ul>
+                <div className="flex items-center gap-4">
+                  <AuthButton />
+                </div>
+              </div>
+            </div>
+          </nav>
+
+          {/* Main Content */}
+          <main className="flex-1 max-w-7xl mx-auto px-4 py-16 w-full">
+            {/* Header with Back Button */}
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h1 className="text-4xl font-bold text-gray-800">{course.title}</h1>
+                <p className="text-gray-600 mt-2">{course.desc}</p>
+              </div>
+              <button 
+                onClick={() => {
+                  setSelectedCourse(null)
+                  setCurrentWordIndex(0)
+                }}
+                className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition"
+              >
+                ← Quay lại
+              </button>
+            </div>
+
+            {/* Practice Card */}
+            <div className="bg-white rounded-2xl shadow-xl p-12 max-w-3xl mx-auto border-t-8 border-amber-900">
+              <div className="text-center mb-8">
+                <p className="text-sm text-gray-500 mb-2">Từ {currentWordIndex + 1} / {course.words.length}</p>
+                <h2 className="text-7xl font-bold text-amber-900 mb-4">{currentWord.word}</h2>
+                <p className="text-3xl text-gray-600 mb-6 font-serif">{currentWord.phonetic}</p>
+                <p className="text-gray-700 bg-yellow-50 p-4 rounded-lg">{currentWord.description}</p>
+              </div>
+
+              <div className="flex justify-center gap-4 mt-8">
+                <button
+                  onClick={() => {
+                    if (currentWordIndex > 0) {
+                      setCurrentWordIndex(currentWordIndex - 1)
+                    }
+                  }}
+                  disabled={currentWordIndex === 0}
+                  className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                >
+                  ← Trước
+                </button>
+
+                <button 
+                  className="bg-gradient-to-r from-amber-900 to-red-700 text-white px-12 py-4 rounded-full font-bold text-lg hover:shadow-xl transition"
+                >
+                  🎤 Phát âm
+                </button>
+
+                <button
+                  onClick={() => {
+                    if (currentWordIndex < course.words.length - 1) {
+                      setCurrentWordIndex(currentWordIndex + 1)
+                    }
+                  }}
+                  disabled={currentWordIndex === course.words.length - 1}
+                  className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                >
+                  Tiếp →
+                </button>
+              </div>
+            </div>
+          </main>
+
+          {/* Footer */}
+          <footer className="bg-gray-800 text-white text-center py-8">
+            <p>&copy; 2026 SSL English Platform. All rights reserved.</p>
+          </footer>
+        </div>
+      )
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* Navigation */}
+      <nav className="bg-amber-900 shadow-lg sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-2">
+              <Link href="/" className="text-2xl font-bold text-white hover:text-yellow-300">SSL English</Link>
+            </div>
+            <ul className="hidden md:flex space-x-8 text-white">
+              <li><Link href="/" className="hover:text-yellow-300 transition">Trang chủ</Link></li>
+              <li><Link href="/vocabulary" className="hover:text-yellow-300 transition">Từ vựng</Link></li>
+              <li><Link href="/pronunciation" className="text-yellow-300 font-bold">Phát âm</Link></li>
+              <li><Link href="/skills" className="hover:text-yellow-300 transition">Kỹ năng</Link></li>
+              <li><Link href="/test" className="hover:text-yellow-300 transition">Bài kiểm tra</Link></li>
+              <li><Link href="/roadmap" className="hover:text-yellow-300 transition">Lộ trình học</Link></li>
+            </ul>
+            <div className="flex items-center gap-4">
+              <AuthButton />
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-amber-900 to-red-700 text-white py-20 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-5xl font-bold mb-4">🎤 Phát Âm</h1>
+          <p className="text-xl">Học cách phát âm chuẩn xác như người bản xứ</p>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <main className="flex-1 max-w-7xl mx-auto px-4 py-16 w-full">
+        <h2 className="text-3xl font-bold text-gray-800 mb-12 text-center">Chọn chủ đề học tập</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {courseData.map(course => (
+            <div key={course.id} className="bg-gradient-to-br from-amber-900 to-red-700 border-4 border-yellow-400 rounded-2xl p-8 text-white hover:-translate-y-2 transition-all duration-300 shadow-xl cursor-pointer">
+              <div className="relative">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-2xl font-bold text-yellow-300">{course.title}</h3>
+                </div>
+                
+                <p className="text-md mb-6 opacity-95">{course.desc}</p>
+                <p className="text-sm mb-6 bg-amber-900 bg-opacity-50 px-3 py-1 rounded-full inline-block">
+                  📚 {course.lessons} bài học
+                </p>
+                
+                <button 
+                  onClick={() => setSelectedCourse(course.id)}
+                  className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-amber-900 font-extrabold py-3 rounded-xl hover:shadow-lg hover:shadow-yellow-500/50 transition-all"
+                >
+                  Bắt đầu học
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* AI Practice Section */}
+        <section className="mt-20">
+          <h2 className="text-3xl font-bold mb-6 text-center text-amber-900">Luyện Phát Âm Với AI</h2>
+          <p className="text-center mb-10 text-lg text-gray-700">Nhấn nút và nói theo từ mà AI đưa ra. Nhận phản hồi ngay lập tức.</p>
+
+          <div className="max-w-3xl mx-auto bg-gradient-to-br from-yellow-50 to-amber-50 border-8 border-amber-900 p-12 rounded-3xl shadow-2xl">
+            <p className="text-amber-900 mb-2 font-medium text-center">Hãy phát âm từ này:</p>
+            <h3 className="text-7xl font-black text-amber-900 mb-2 tracking-wide text-center">example</h3>
+            <p className="text-3xl text-gray-600 mb-10 font-serif text-center">/ɪɡˈzæmpəl/</p>
+
+            <button className="w-full md:w-2/3 mx-auto bg-gradient-to-r from-amber-900 to-red-700 text-white py-5 rounded-full font-bold text-xl flex items-center justify-center gap-3 hover:shadow-2xl transition-all block">
+              🎤 Nhấn để phát âm
+            </button>
+
+            <div className="mt-8 bg-yellow-100 p-6 rounded-xl border-2 border-yellow-400 text-sm font-medium text-amber-900">
+              💡 Mẹo: Nói rõ ràng, tự nhiên và lắng nghe âm thanh của mình trước khi nhấn nút.
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-800 text-white text-center py-8 mt-20">
+        <p>&copy; 2026 SSL English Platform. All rights reserved.</p>
+        <p className="text-sm mt-2">Contact: contact@sslenglish.com</p>
+      </footer>
+    </div>
+  )
+}

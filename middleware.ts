@@ -1,22 +1,19 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 
-const isPublicRoute = createRouteMatcher(['/'])
+// Chỉ trang chủ và trang đăng nhập/đăng ký là công khai
+const isPublicRoute = createRouteMatcher([
+  '/',
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+])
 
-export default clerkMiddleware((auth, req) => {
-  const path = req.nextUrl.pathname
-  console.log('🔍 Middleware checking:', path)
-  
+export default clerkMiddleware(async (auth, req) => {
+  // Tất cả các route khác đều yêu cầu xác thực
   if (!isPublicRoute(req)) {
-    console.log('🔒 Protected route, checking auth...')
-    try {
-      auth().protect()
-      console.log('✅ User authenticated')
-    } catch (error) {
-      console.log('❌ User not authenticated, should redirect')
-      throw error
+    const { userId } = await auth()
+    if (!userId) {
+      return auth.redirectToSignIn()
     }
-  } else {
-    console.log('🌐 Public route, allowing access')
   }
 })
 

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Làm bài thi Nghe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Nunito', sans-serif; } </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <div class="bg-white shadow-sm p-4 sticky top-0 z-20">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="font-bold text-xl text-gray-800" id="testTitle">Loading...</h1>
+            <button onclick="history.back()" class="text-gray-500 hover:text-red-500 font-bold text-sm">
+                <i class="fas fa-times mr-1"></i> Thoát
+            </button>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 flex-1 max-w-4xl">
+        
+        <div class="bg-white rounded-xl shadow-md mb-8 sticky top-20 z-10 border border-gray-200 p-4">
+    <h3 class="text-sm font-bold text-gray-500 mb-2 uppercase tracking-wide">Trình phát âm thanh</h3>
+    <audio id="audioPlayer" controls class="w-full h-10 outline-none">
+        <source src="" type="audio/mp4">
+        Trình duyệt không hỗ trợ phát file này.
+    </audio>
+</div>
+
+        <div class="bg-white rounded-xl shadow-lg p-8 space-y-10" id="questionsContainer">
+            </div>
+
+    </div>
+
+    <div class="bg-white border-t p-4 sticky bottom-0 z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+        <div class="container mx-auto max-w-4xl flex justify-between items-center">
+            <div id="scoreDisplay" class="font-bold text-xl text-blue-600"></div>
+            <button onclick="submitTest()" id="submitBtn" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg transform hover:-translate-y-1">
+                Nộp bài thi
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        const urlParams = new URLSearchParams(window.location.search);
+        const testId = urlParams.get('id');
+        let currentQuestions = [];
+
+        async function loadTestDetail() {
+            // Cần viết thêm API lấy chi tiết 1 bài test theo ID
+            // Hoặc nếu API getAllTests trả về full data thì lọc tạm ở client (đơn giản nhưng không tối ưu nếu data lớn)
+            // Ở đây giả sử ta lọc từ list test đã tải
+            const res = await fetch(`${API_URL}/listening-tests`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
+            const tests = await res.json();
+            const test = tests.find(t => t._id === testId);
+
+            if (test) {
+                renderTest(test);
+            } else {
+                alert("Không tìm thấy bài thi!");
+            }
+        }
+
+        function renderTest(testData) {
+            document.getElementById('testTitle').innerText = testData.title;
+            document.getElementById('audioPlayer').src = testData.audioUrl;
+            
+            currentQuestions = testData.questions;
+            const container = document.getElementById('questionsContainer');
+            
+            container.innerHTML = testData.questions.map((q, index) => `
+                <div class="question-block" id="q-block-${q._id}">
+                    <div class="flex items-start mb-4">
+                        <span class="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-lg text-sm mr-3 shrink-0">Câu ${q.id}</span>
+                        <p class="font-bold text-gray-800 text-lg leading-relaxed">${q.text}</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 ml-0 md:ml-12">
+                        ${q.options.map((opt, i) => {
+                            const label = ['A', 'B', 'C', 'D'][i];
+                            return `
+                            <label class="flex items-center p-4 border-2 border-gray-100 rounded-xl cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition group">
+                                <input type="radio" name="q_${q._id}" value="${label}" class="w-5 h-5 text-blue-600 mr-3 focus:ring-blue-500">
+                                <span class="text-gray-600 font-medium group-hover:text-blue-800"><b class="mr-1">${label}.</b> ${opt}</span>
+                            </label>
+                            `;
+                        }).join('')}
+                    </div>
+                    
+                    <div id="result-${q._id}" class="hidden mt-4 ml-0 md:ml-12 p-4 rounded-xl text-sm font-bold"></div>
+                </div>
+            `).join('');
+        }
+
+        function submitTest() {
+            let score = 0;
+            let isAllAnswered = true;
+
+            currentQuestions.forEach(q => {
+                const selected = document.querySelector(`input[name="q_${q._id}"]:checked`);
+                const resultDiv = document.getElementById(`result-${q._id}`);
+                const block = document.getElementById(`q-block-${q._id}`);
+                
+                // Reset style
+                resultDiv.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700', 'bg-yellow-100', 'text-yellow-700');
+                
+                if (selected) {
+                    if (selected.value === q.correctAnswer) {
+                        score++;
+                        resultDiv.innerText = `✓ Chính xác! Đáp án là ${q.correctAnswer}`;
+                        resultDiv.classList.add('bg-green-100', 'text-green-700');
+                        block.classList.add('border-l-4', 'border-green-500', 'pl-4'); // Đánh dấu biên xanh
+                    } else {
+                        resultDiv.innerText = `✗ Sai rồi. Đáp án đúng là ${q.correctAnswer}`;
+                        resultDiv.classList.add('bg-red-100', 'text-red-700');
+                        block.classList.add('border-l-4', 'border-red-500', 'pl-4'); // Đánh dấu biên đỏ
+                    }
+                } else {
+                    resultDiv.innerText = `⚠ Bạn chưa chọn đáp án. Đáp án đúng là ${q.correctAnswer}`;
+                    resultDiv.classList.add('bg-yellow-100', 'text-yellow-700');
+                    isAllAnswered = false;
+                }
+                resultDiv.classList.remove('hidden');
+            });
+
+            const scoreDiv = document.getElementById('scoreDisplay');
+            scoreDiv.innerText = `Kết quả: ${score}/${currentQuestions.length}`;
+            
+            // Disable nút nộp bài
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').innerText = "Đã hoàn thành";
+            document.getElementById('submitBtn').classList.add('opacity-50', 'cursor-not-allowed');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        loadTestDetail();
+    </script>
+</body>
+</html>

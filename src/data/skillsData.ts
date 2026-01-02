@@ -9,6 +9,7 @@ export interface SkillContent {
     description: string
     videoUrl?: string
     audioUrl?: string
+    audioPath?: string
     transcript?: string
     viTranslation?: string
     duration: string
@@ -21,13 +22,13 @@ export const LISTENING_CONTENTS: Record<string, SkillContent> = {
   lessons: {
     category: 'lessons',
     title: 'Bài Học Nghe Hiểu',
-    description: 'Luyện nghe qua các video bài giảng tiếng Anh theo từng cấp độ',
+    description: 'Luyện nghe qua các audio bài giảng tiếng Anh theo từng cấp độ',
     items: [
       {
         id: 1,
         title: 'English Listening Practice - Level A1',
         description: 'Bài học nghe cơ bản cho người mới bắt đầu',
-        videoUrl: 'https://www.youtube.com/embed/XGcErXnw9_Y',
+        audioPath: '/audio/1.1.mp4',
         transcript: 'Practice listening with simple conversations and everyday situations. Perfect for beginners learning English.',
         viTranslation: 'Luyện nghe với các hội thoại đơn giản và tình huống hàng ngày. Hoàn hảo cho người mới bắt đầu học tiếng Anh.',
         duration: '30:00',
@@ -37,7 +38,7 @@ export const LISTENING_CONTENTS: Record<string, SkillContent> = {
         id: 2,
         title: 'English Listening Practice - Level A2',
         description: 'Bài học nghe sơ cấp cho người đã có nền tảng',
-        videoUrl: 'https://www.youtube.com/embed/ny1wb1nUPEE',
+        audioPath: '/audio/1-2.mp4',
         transcript: 'Improve your listening skills with practical conversations and common topics. Suitable for elementary level learners.',
         viTranslation: 'Cải thiện kỹ năng nghe với các hội thoại thực tế và chủ đề phổ biến. Phù hợp cho học viên cấp độ sơ cấp.',
         duration: '30:00',
@@ -47,7 +48,7 @@ export const LISTENING_CONTENTS: Record<string, SkillContent> = {
         id: 3,
         title: 'English Listening Practice - Level B1',
         description: 'Bài học nghe trung cấp',
-        videoUrl: 'https://www.youtube.com/embed/Cbn5-8jXT6A',
+        audioPath: '/audio/1.3.mp4',
         transcript: 'Enhance your listening comprehension with intermediate level content. Covers various topics and situations.',
         viTranslation: 'Nâng cao khả năng nghe hiểu với nội dung trung cấp. Bao gồm nhiều chủ đề và tình huống khác nhau.',
         duration: '30:00',
@@ -57,7 +58,7 @@ export const LISTENING_CONTENTS: Record<string, SkillContent> = {
         id: 4,
         title: 'English Listening Practice - Level B2',
         description: 'Bài học nghe trung cấp cao',
-        videoUrl: 'https://www.youtube.com/embed/qQrW0ncxsxc',
+        audioPath: '/audio/1.5.mp4',
         transcript: 'Advanced listening practice with complex conversations and diverse topics. Challenge yourself with upper-intermediate content.',
         viTranslation: 'Luyện nghe nâng cao với các hội thoại phức tạp và chủ đề đa dạng. Thử thách bản thân với nội dung trung cấp cao.',
         duration: '30:00',
