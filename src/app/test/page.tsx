@@ -3,82 +3,133 @@
 import Link from 'next/link'
 import AuthButton from '@/components/AuthButton'
 import { useState } from 'react'
+import { READING_CONTENTS, SPEAKING_CONTENTS, WRITING_CONTENTS } from '@/data/skillsData'
+
+interface Question {
+  id: number
+  question: string
+  options: string[]
+  correctAnswer: number
+  explanation: string
+  level: string
+  tags?: string[]
+}
 
 export default function TestPage() {
-  const [selectedTest, setSelectedTest] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [quizData, setQuizData] = useState<any>(null)
+  const [selectedLevel, setSelectedLevel] = useState<'A1' | 'A2' | 'B1' | 'B2'>('A1')
+  const [quizData, setQuizData] = useState<Question[] | null>(null)
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({})
   const [showResults, setShowResults] = useState(false)
 
-  const testTypes = [
-    { id: 'vocabulary', title: 'Kiểm Tra Từ Vựng', type: 'Từ vựng', questions: 10, time: '15 phút', icon: '📚' },
-    { id: 'listening', title: 'Kiểm Tra Nghe', type: 'Listening', questions: 10, time: '20 phút', icon: '👂' },
-    { id: 'reading', title: 'Kiểm Tra Đọc', type: 'Reading', questions: 10, time: '20 phút', icon: '📖' },
-    { id: 'grammar', title: 'Kiểm Tra Ngữ Pháp', type: 'Grammar', questions: 10, time: '15 phút', icon: '✍️' },
+  const levels = [
+    { id: 'A1' as const, title: 'Cấp Độ A1', description: 'Sơ cấp', icon: '🌱' },
+    { id: 'A2' as const, title: 'Cấp Độ A2', description: 'Tiền trung cấp', icon: '🌿' },
+    { id: 'B1' as const, title: 'Cấp Độ B1', description: 'Trung cấp', icon: '🌳' },
+    { id: 'B2' as const, title: 'Cấp Độ B2', description: 'Trung cấp cao', icon: '🌲' },
   ]
 
-  // ============================================
-  // AI INTEGRATION: Quiz Generation API
-  // ============================================
-  // Function này sử dụng Gemini AI API qua server-side route
-  // để generate quiz questions dựa trên nội dung đã học
-  const generateQuiz = async (testType: string) => {
-    setLoading(true)
+  const generateQuiz = (level: 'A1' | 'A2' | 'B1' | 'B2') => {
+    const questions: Question[] = []
+    let questionId = 1
 
-    try {
-      // Gọi API route thay vì gọi trực tiếp Gemini
-      const response = await fetch('/api/quiz/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          topic: testType === 'vocabulary' ? 'Daily vocabulary' : 
-                 testType === 'listening' ? 'Listening comprehension' :
-                 testType === 'reading' ? 'Reading comprehension' : 'Grammar',
-          level: 'A1-B2',
-          type: testType
+    // Lấy nội dung từ Reading
+    Object.values(READING_CONTENTS).forEach(category => {
+      category.items
+        .filter(item => item.level === level)
+        .forEach(item => {
+          if (item.transcript) {
+            // Câu hỏi về nội dung đọc
+            questions.push({
+              id: questionId++,
+              question: `Read the text: "${item.transcript.substring(0, 100)}..." What is this text about?`,
+              options: [
+                item.description,
+                'A different topic',
+                'Weather forecast',
+                'Sports news'
+              ],
+              correctAnswer: 0,
+              explanation: `The text is about: ${item.description}`,
+              level: item.level
+            })
+
+            // Câu hỏi từ vựng từ reading
+            const words = item.transcript.split(' ').filter(w => w.length > 5)
+            if (words.length > 0) {
+              const word = words[Math.floor(Math.random() * Math.min(words.length, 10))]
+              questions.push({
+                id: questionId++,
+                question: `In the text about "${item.title}", what type of content is it?`,
+                options: [
+                  'Reading comprehension',
+                  'Math problem',
+                  'Science experiment',
+                  'History lesson'
+                ],
+                correctAnswer: 0,
+                explanation: 'This is a reading comprehension text.',
+                level: item.level
+              })
+            }
+          }
         })
-      })
+    })
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || `API request failed: ${response.status}`)
-      }
+    // Lấy câu hỏi từ Speaking
+    Object.values(SPEAKING_CONTENTS).forEach(category => {
+      category.items
+        .filter(item => item.level === level)
+        .forEach(item => {
+          if (item.sampleAnswer) {
+            questions.push({
+              id: questionId++,
+              question: `${item.prompt} - Which is a good answer?`,
+              options: [
+                item.sampleAnswer,
+                'I don\'t know',
+                'Maybe tomorrow',
+                'Yes, it is blue'
+              ],
+              correctAnswer: 0,
+              explanation: `A good answer would be: ${item.sampleAnswer}`,
+              level: item.level
+            })
+          }
+        })
+    })
 
-      const data = await response.json()
-      
-      if (!data.ok || !data.quiz) {
-        throw new Error('Invalid response from server')
-      }
+    // Lấy câu hỏi từ Writing
+    Object.values(WRITING_CONTENTS).forEach(category => {
+      category.items
+        .filter(item => item.level === level)
+        .forEach(item => {
+          if (item.sampleAnswer) {
+            questions.push({
+              id: questionId++,
+              question: `For the topic "${item.title}", which is the best example?`,
+              options: [
+                item.sampleAnswer.substring(0, 80) + '...',
+                'Hello. Goodbye.',
+                'One two three.',
+                'Red blue green.'
+              ],
+              correctAnswer: 0,
+              explanation: `This is a good example for: ${item.title}`,
+              level: item.level
+            })
+          }
+        })
+    })
 
-      // Transform API response to match existing quiz format
-      const transformedQuiz = data.quiz.map((q: any, idx: number) => ({
-        id: idx + 1,
-        question: q.question,
-        options: q.options,
-        correctAnswer: q.answerIndex,
-        explanation: q.explanation,
-        tags: q.tags
-      }))
-
-      setQuizData(transformedQuiz)
-      setSelectedTest(testType)
-      setCurrentQuestion(0)
-      setSelectedAnswers({})
-      setShowResults(false)
-    } catch (error) {
-      console.error('Error generating quiz:', error)
-      alert(`Lỗi tạo quiz: ${error instanceof Error ? error.message : 'Unknown error'}\n\nVui lòng kiểm tra:\n- API key đã được cấu hình trong .env.local\n- Generative Language API đã được bật trong Google Cloud Console\n- Kết nối internet`)
-      setQuizData(null)
-      setSelectedTest(null)
-    } finally {
-      setLoading(false)
-    }
+    // Trộn câu hỏi và lấy 10 câu
+    const shuffled = questions.sort(() => Math.random() - 0.5).slice(0, 10)
+    
+    setQuizData(shuffled)
+    setCurrentQuestion(0)
+    setSelectedAnswers({})
+    setShowResults(false)
   }
-  // ============================================
 
   const handleAnswerSelect = (answerIndex: number) => {
     setSelectedAnswers({
@@ -118,7 +169,6 @@ export default function TestPage() {
   }
 
   const resetQuiz = () => {
-    setSelectedTest(null)
     setQuizData(null)
     setCurrentQuestion(0)
     setSelectedAnswers({})
@@ -126,7 +176,7 @@ export default function TestPage() {
   }
 
   // Nếu đang làm bài test
-  if (selectedTest && quizData && !showResults) {
+  if (quizData && !showResults) {
     const question = quizData[currentQuestion]
     const progress = ((currentQuestion + 1) / quizData.length) * 100
 
@@ -138,7 +188,7 @@ export default function TestPage() {
               <div className="flex items-center gap-2">
                 <Link href="/" className="text-2xl font-bold text-white hover:text-yellow-300">SSL English</Link>
               </div>
-              <div className="text-white font-bold">Bài Kiểm Tra {selectedTest}</div>
+              <div className="text-white font-bold">Bài Kiểm Tra - Cấp Độ {selectedLevel}</div>
               <button onClick={resetQuiz} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
                 Thoát
               </button>
@@ -210,11 +260,11 @@ export default function TestPage() {
 
             <div className="text-center">
               <p className="text-sm text-gray-600">
-                Đã trả lời: {Object.keys(selectedAnswers).length}/{quizData.questions.length}
+                Đã trả lời: {Object.keys(selectedAnswers).length}/{quizData.length}
               </p>
             </div>
 
-            {currentQuestion < quizData.questions.length - 1 ? (
+            {currentQuestion < quizData.length - 1 ? (
               <button
                 onClick={handleNextQuestion}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-bold"
@@ -370,47 +420,35 @@ export default function TestPage() {
       {/* Main Content */}
       <main className="flex-1 max-w-7xl mx-auto px-4 py-16 w-full">
         <h1 className="text-4xl font-bold mb-8 text-gray-800">📋 Bài Kiểm Tra</h1>
-        <p className="text-xl text-gray-600 mb-4">Đánh giá kỹ năng tiếng Anh của bạn thông qua các bài test.</p>
-        
-        {/* ============================================ */}
-        {/* AI INTEGRATION: Quiz Generation */}
-        {/* Tất cả câu hỏi được tạo 100% bởi Gemini AI */}
-        {/* Mỗi lần làm bài = câu hỏi unique mới */}
-        {/* ============================================ */}
-        <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg mb-12">
-          <p className="text-blue-900">
-            <span className="font-bold">🤖 100% AI-Generated Quiz:</span> Tất cả câu hỏi được tạo tự động bởi Gemini AI. Mỗi lần làm bài sẽ có nội dung hoàn toàn khác nhau!
-          </p>
+        <p className="text-xl text-gray-600 mb-12">Ôn tập kiến thức qua các câu hỏi trắc nghiệm theo từng cấp độ.</p>
+
+        {/* Level Selection */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {levels.map((level) => (
+            <div key={level.id} className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-lg p-6 hover:shadow-lg transition">
+              <div className="text-5xl mb-4 text-center">{level.icon}</div>
+              <h3 className="text-xl font-bold mb-2 text-gray-800 text-center">{level.title}</h3>
+              <p className="text-gray-600 mb-4 text-center text-sm">{level.description}</p>
+              <button 
+                onClick={() => generateQuiz(level.id)}
+                className="w-full bg-gradient-to-r from-red-600 to-orange-600 text-white py-3 rounded-lg font-bold hover:from-red-700 hover:to-orange-700 transition"
+              >
+                Bắt đầu test
+              </button>
+              <p className="text-xs text-center text-gray-500 mt-2">10 câu hỏi • ~15 phút</p>
+            </div>
+          ))}
         </div>
 
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mb-4"></div>
-            <p className="text-xl text-gray-600">Đang tạo bài kiểm tra...</p>
-            <p className="text-sm text-gray-500 mt-2">AI đang chuẩn bị câu hỏi cho bạn</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {testTypes.map((test) => (
-              <div key={test.id} className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-6 hover:shadow-lg transition">
-                <div className="text-5xl mb-4">{test.icon}</div>
-                <div className="text-sm font-bold text-red-600 mb-2">🏷️ {test.type}</div>
-                <h3 className="text-xl font-bold mb-2 text-gray-800">{test.title}</h3>
-                <p className="text-gray-600 mb-4">
-                  <span className="block">📝 {test.questions} câu hỏi</span>
-                  <span className="block">⏱️ {test.time}</span>
-                  <span className="block text-sm text-blue-600 mt-2">🤖 Được tạo bởi AI</span>
-                </p>
-                <button 
-                  onClick={() => generateQuiz(test.id)}
-                  className="w-full bg-red-600 text-white py-2 rounded font-bold hover:bg-red-700 transition"
-                >
-                  Bắt đầu test
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="mt-12 bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg">
+          <h3 className="font-bold text-blue-900 mb-2">📚 Về bài kiểm tra:</h3>
+          <ul className="text-blue-800 space-y-2">
+            <li>• Câu hỏi được lấy từ các bài học trong phần Luyện kỹ năng</li>
+            <li>• Mỗi bài test có 10 câu hỏi trắc nghiệm</li>
+            <li>• Nội dung bao gồm Reading, Speaking và Writing</li>
+            <li>• Sau khi hoàn thành, bạn sẽ thấy đáp án và giải thích chi tiết</li>
+          </ul>
+        </div>
       </main>
 
       {/* Footer */}
