@@ -57,14 +57,7 @@ export default function VocabularyPracticePage() {
   const [quizScore, setQuizScore] = useState(0)
   const [fillInAnswer, setFillInAnswer] = useState('')
   const [progress, setProgress] = useState<TopicProgress[]>([])
-
-  // Load progress from localStorage
-  useEffect(() => {
-    const savedProgress = localStorage.getItem('vocabulary_progress')
-    if (savedProgress) {
-      setProgress(JSON.parse(savedProgress))
-    }
-  }, [])
+  const [isSaving, setIsSaving] = useState(false)
 
   // Fetch vocabulary data
   useEffect(() => {
@@ -217,7 +210,7 @@ export default function VocabularyPracticePage() {
   }
 
   // Calculate score
-  const calculateScore = () => {
+  const calculateScore = async () => {
     let score = 0
     quizQuestions.forEach((q) => {
       const userAnswer = userAnswers[q.id]
@@ -228,7 +221,7 @@ export default function VocabularyPracticePage() {
     setQuizScore(score)
     setShowResults(true)
 
-    // Save progress
+    // Save progress to Vercel KV
     const newProgress: TopicProgress = {
       level,
       topic,
@@ -239,7 +232,24 @@ export default function VocabularyPracticePage() {
 
     const updatedProgress = [...progress.filter(p => !(p.level === level && p.topic === topic)), newProgress]
     setProgress(updatedProgress)
-    localStorage.setItem('vocabulary_progress', JSON.stringify(updatedProgress))
+
+    setIsSaving(true)
+    try {
+      const response = await fetch('/api/user/vocabulary-progress', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedProgress)
+      })
+      if (!response.ok) {
+        console.error('Failed to save progress')
+      }
+    } catch (error) {
+      console.error('Error saving progress:', error)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   // Restart quiz

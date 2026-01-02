@@ -56,13 +56,24 @@ export default function VocabularyContent() {
   const [loading, setLoading] = useState(false)
   const [expandedWord, setExpandedWord] = useState<string | null>(null)
   const [progress, setProgress] = useState<TopicProgress[]>([])
+  const [loadingProgress, setLoadingProgress] = useState(true)
 
-  // Load progress from localStorage
+  // Load progress from Vercel KV
   useEffect(() => {
-    const savedProgress = localStorage.getItem('vocabulary_progress')
-    if (savedProgress) {
-      setProgress(JSON.parse(savedProgress))
+    const fetchProgress = async () => {
+      try {
+        const response = await fetch('/api/user/vocabulary-progress')
+        if (response.ok) {
+          const data = await response.json()
+          setProgress(Array.isArray(data.progress) ? data.progress : [])
+        }
+      } catch (error) {
+        console.error('Error fetching progress:', error)
+      } finally {
+        setLoadingProgress(false)
+      }
     }
+    fetchProgress()
   }, [])
 
   // Fetch word data from Dictionary API
