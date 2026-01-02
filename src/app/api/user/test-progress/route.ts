@@ -4,9 +4,8 @@ import { kv } from '@vercel/kv'
 
 export const dynamic = 'force-dynamic'
 
-interface TopicProgress {
+interface TestProgress {
   level: string
-  topic: string
   score: number
   total: number
   completedAt: string
@@ -21,11 +20,11 @@ export async function GET(request: NextRequest) {
     }
 
     const userId = session.user.id
-    const progress = await kv.get(`vocabulary_progress:${userId}`)
+    const progress = await kv.get(`test_progress:${userId}`)
     
     return NextResponse.json({ progress: progress || [] })
   } catch (error) {
-    console.error('Error fetching vocabulary progress:', error)
+    console.error('Error fetching test progress:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -39,13 +38,13 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = session.user.id
-    const body: TopicProgress[] = await request.json()
+    const body: TestProgress[] = await request.json()
 
-    await kv.set(`vocabulary_progress:${userId}`, body)
+    await kv.set(`test_progress:${userId}`, body)
 
     return NextResponse.json({ success: true, progress: body })
   } catch (error) {
-    console.error('Error saving vocabulary progress:', error)
+    console.error('Error saving test progress:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

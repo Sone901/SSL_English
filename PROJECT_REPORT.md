@@ -45,11 +45,27 @@
   - Animation utilities
 
 #### **Authentication**
-- **Clerk (@clerk/nextjs 6.36.5)**
-  - Xác thực người dùng
-  - Quản lý session
-  - User profile management
-  - Sign-in/Sign-up components
+- **NextAuth.js v5.0.0-beta.20** (thay thế Clerk)
+  - OAuth provider: Google (clientId/clientSecret)
+  - Credentials provider: Username + Password
+  - JWT strategy: Token-based authentication
+  - Session management: 30-day expiration
+  
+**Features:**
+  - User registration via `/sign-up` page
+  - Dual login methods: Google OAuth + Username/Password
+  - Secure session handling
+  - Automatic redirect to previous page after login
+  - User progress tracking với Vercel KV
+
+**Authentication Flow:**
+```typescript
+// NextAuth config
+- GoogleProvider: OAuth2 flow
+- CredentialsProvider: Custom email validation
+- Callbacks: JWT token + session management
+- Vercel KV: Store user credentials & profiles
+```
 
 ### 2.2. AI Integration
 
@@ -333,7 +349,89 @@ const generateQuiz = (level) => {
 }
 ```
 
-### 4.4. Vocabulary Practice
+### 4.5. Sign-up System
+
+**Files:** 
+- `src/app/sign-up/page.tsx` - Registration form
+- `src/app/api/auth/register/route.ts` - Registration API
+
+**Chức năng:**
+- Form validation: username ≥3 chars, password ≥6 chars
+- Duplicate check: Không cho phép username đã tồn tại
+- Password confirmation: Verify passwords match
+- Automatic redirect: Sau khi đăng ký → `/sign-in`
+- Vercel KV storage: Lưu credentials + profile
+
+**Flow:**
+1. User nhập username, password, confirm password
+2. Client-side validation
+3. POST `/api/auth/register`
+4. Server kiểm tra duplicate
+5. Lưu vào Vercel KV: `user:{username}:credentials`
+6. Redirect tới sign-in sau 2 seconds
+
+**UI Design:**
+- Dark theme Tết: #8B0000 (đỏ), #FFD700 (vàng)
+- Form fields với icon: 👤 (username), 🔒 (password), 🔐 (confirm)
+- Loading state: "⏳ Đang xử lý..."
+- Success state: "✅ Thành công!"
+
+### 4.6. Sign-in System
+
+**File:** `src/app/sign-up/page.tsx`
+
+**Chức năng:**
+- Dual authentication: Credentials + Google OAuth
+- Remember callback URL: Quay lại trang trước khi đăng nhập
+- Session creation: JWT token 30-day expiration
+- Error handling: Hiển thị lỗi login
+
+**UI Design:**
+- Email/Username input: 👤 icon
+- Password input: 🔒 icon
+- Login button: Gradient đỏ (#8B0000 → #C41E3A)
+- Divider: "HOẶC" với border vàng
+- Google OAuth button: Vàng (#FFF5D7), border đỏ
+- Signup link: "Đăng ký ngay"
+
+### 4.7. Activity Tracking
+
+**File:** `src/app/api/user/attempts/route.ts`
+
+**Chức năng:**
+- Record mỗi lần user nộp bài quiz
+- Track attempt count per skill (vocabulary, reading, listening, test)
+- Save metadata: level, topic, score, total
+- Calculate learning activity statistics
+
+**Data Structure:**
+```typescript
+interface AttemptRecord {
+  type: 'vocabulary' | 'reading' | 'listening' | 'test'
+  level?: string
+  topic?: string
+  score: number
+  total: number
+  completedAt: string
+}
+
+interface Activity {
+  totalAttempts: number
+  vocabularyAttempts: number
+  readingAttempts: number
+  listeningAttempts: number
+  testAttempts: number
+  lastActivityAt: string
+}
+```
+
+**Integration Points:**
+- Vocabulary practice: POST attempt khi nộp quiz
+- Reading: (planned) POST attempt
+- Listening: (planned) POST attempt
+- Test: (planned) POST attempt
+
+### 4.8. Vocabulary Practice
 
 **File:** `src/app/vocabulary/page.tsx` và `practice/[level]/[topic]/page.tsx`
 
@@ -341,17 +439,6 @@ const generateQuiz = (level) => {
 - Topic-based learning
 - Level filtering
 - Interactive practice exercises
-
-### 4.5. Speaking & Pronunciation
-
-**Files:** 
-- `src/app/skills/speaking/page.tsx`
-- `src/app/pronunciation/page.tsx`
-
-**Planned Features:**
-- Speech recognition
-- Pronunciation scoring
-- Real-time feedback
 
 ---
 
@@ -483,7 +570,23 @@ className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
 
 ## 7. API ROUTES
 
-### 7.1. Quiz Generation
+### 7.1. Authentication Routes
+
+**Registration:**
+- **Endpoint:** `/api/auth/register`
+- **Method:** POST
+- **Input:** { username, password }
+- **Validation:** Username ≥3 chars, password ≥6 chars, no duplicates
+- **Output:** { message: "Đăng ký thành công" }
+- **Storage:** Vercel KV `user:{username}:credentials`
+
+**NextAuth Routes:**
+- **Endpoint:** `/api/auth/[...nextauth]`
+- **Methods:** GET, POST
+- **Providers:** Google OAuth, Credentials
+- **Session:** JWT-based, 30-day expiration
+
+### 7.2. Quiz Generation
 
 **Endpoint:** `/api/quiz/generate`
 - **Method:** POST
@@ -491,16 +594,23 @@ className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
 - **AI Integration:** Google Generative AI
 - **Output:** Array of questions
 
-### 7.2. Progress Tracking
+### 7.3. Progress Tracking
 
 **Endpoints:**
-- `/api/progress/route.ts` - Get user progress
-- `/api/progress/complete/route.ts` - Mark lesson complete
-- `/api/progress/test/route.ts` - Save test results
+- **GET `/api/progress`** - Get user progress
+- **POST `/api/progress`** - Save progress with attempts
+- **GET `/api/user/vocabulary-progress`** - Get vocabulary scores
+- **POST `/api/user/vocabulary-progress`** - Save vocabulary progress
+- **GET `/api/user/reading-progress`** - Get reading scores
+- **GET `/api/user/listening-progress`** - Get listening scores
+- **GET `/api/user/test-progress`** - Get test scores
+- **GET `/api/user/attempts`** - Get attempt history
+- **POST `/api/user/attempts`** - Record new attempt
 
-**Storage:** Vercel KV
+**Authentication:** NextAuth session required (session.user.id as userId)
+**Storage:** Vercel KV with key format: `user:{userId}:type`
 
-### 7.3. Writing Check
+### 7.4. Writing Check
 
 **Endpoint:** `/api/writing/check/route.ts`
 - **Method:** POST
@@ -762,24 +872,29 @@ const vocabLevel: any = vocabularyData[level]
 
 ### 12.1. Achievements
 
-✅ **Complete Learning Platform** với 4 kỹ năng chính
+✅ **Complete Learning Platform** với 4 kỹ năng chính (Listening, Reading, Vocabulary, Test)
 ✅ **40 Listening Lessons** với audio và quiz
 ✅ **20 Reading Passages** với 80 câu hỏi
 ✅ **Comprehensive Test System** với vocabulary/listening/reading
-✅ **AI Integration** cho dynamic content
+✅ **User Authentication System** - NextAuth v5 + Google OAuth + Custom credentials
+✅ **User Registration & Sign-up** - Form validation, duplicate check, profile creation
+✅ **Activity Tracking** - Record attempts, skill tracking, progress statistics
+✅ **AI Integration** cho dynamic content (Google Generative AI)
 ✅ **Automated Data Pipeline** từ Excel → TypeScript
-✅ **Modern Tech Stack** với Next.js 14, React 18, TypeScript
+✅ **Modern Tech Stack** với Next.js 14, React 18, TypeScript, Tailwind CSS
 ✅ **Responsive Design** hoạt động tốt trên mọi devices
 ✅ **Type-Safe Code** với TypeScript interfaces
 ✅ **Optimized Performance** với efficient data structures
+✅ **Progress Dashboard** - Hiển thị stats learning activity
 
 ### 12.2. Statistics
 
 **Code:**
-- Total Lines: ~5,000+ lines TypeScript/TSX
-- Components: 10+ reusable components
-- Pages: 15+ pages
-- API Routes: 5+ endpoints
+- Total Lines: ~6,000+ lines TypeScript/TSX
+- Components: 12+ reusable components
+- Pages: 18+ pages (added sign-in, sign-up, dashboard)
+- API Routes: 12+ endpoints (auth, progress, attempts, writing)
+- Authentication: NextAuth + Google OAuth + Credentials
 
 **Content:**
 - Audio Files: 41 files (78.65 MB)
@@ -788,10 +903,17 @@ const vocabLevel: any = vocabularyData[level]
 - Vocabulary Words: 400+ words
 - Levels: 4 levels (A1, A2, B1, B2)
 
+**Features:**
+- User registration & authentication
+- Dual login methods (Google + Username/Password)
+- Activity tracking with Vercel KV
+- Progress reporting dashboard
+- 30-day session persistence
+
 **Dependencies:**
-- Production: 7 packages
+- Production: 10 packages (added next-auth, @vercel/kv)
 - Development: 8 packages
-- Total: 415 packages (including sub-dependencies)
+- Total: 420+ packages (including sub-dependencies)
 
 ### 12.3. Project Quality
 
@@ -830,22 +952,57 @@ const vocabLevel: any = vocabularyData[level]
 
 **Environment Variables:**
 ```env
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-CLERK_SECRET_KEY=
-GOOGLE_API_KEY=
+# NextAuth Configuration
+NEXTAUTH_SECRET=your_secret_key
+NEXTAUTH_URL=https://your-domain.com
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your_client_id
+GOOGLE_CLIENT_SECRET=your_client_secret
+
+# Vercel KV
 KV_URL=
 KV_REST_API_URL=
 KV_REST_API_TOKEN=
 KV_REST_API_READ_ONLY_TOKEN=
+
+# Optional: Google AI API
+GOOGLE_API_KEY=your_api_key
 ```
 
-### 13.2. Production Considerations
+### 13.2. Local Development
 
-- ✅ Environment variables secured
-- ✅ API keys in .env (not committed)
+**Setup:**
+```bash
+# Install dependencies
+npm install
+
+# Generate data from Excel
+node scripts/generateListeningData.js
+node scripts/generateReadingData.js
+
+# Create .env.local
+cp .env.example .env.local
+
+# Run dev server
+npm run dev
+```
+
+**Access:**
+- Application: http://localhost:3000
+- Sign-up: http://localhost:3000/sign-up
+- Sign-in: http://localhost:3000/sign-in
+- Dashboard: http://localhost:3000/ (requires login)
+
+### 13.3. Production Considerations
+
+- ✅ Environment variables secured (stored in Vercel dashboard)
+- ✅ API keys in .env.local (not committed)
 - ✅ Build process tested
 - ✅ Error boundaries implemented
 - ✅ Loading states for async operations
+- ✅ NextAuth secure cookies + CSRF protection
+- ✅ Vercel KV encryption at rest
 
 ---
 

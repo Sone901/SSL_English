@@ -3,16 +3,184 @@
 import Link from 'next/link'
 import AuthButton from '@/components/AuthButton'
 import { useEffect, useState } from 'react'
+import { fetchUserStats, UserStats } from '@/lib/progress'
+import vocabularyData from '@/data/vocabulary.json'
+import vietnameseTranslations from '@/data/vietnameseTranslations.json'
+
+interface TopicProgress {
+  level: string
+  topic: string
+  score: number
+  total: number
+  completedAt: string
+}
 
 export default function Home() {
-  const [wordOfDay] = useState({ 
-    word: 'Serendipity', 
-    pronunciation: '/ˌserənˈdɪpəti/', 
-    meaning: 'May mắn tìm thấy điều tốt đẹp một cách tình cờ' 
+  const [wordOfDay, setWordOfDay] = useState({
+    word: 'Loading...',
+    vietnamese: '',
+    definition: '',
+    example: ''
   })
 
+  const [stats, setStats] = useState<UserStats>({
+    vocabularyCompleted: 0,
+    listeningCompleted: 0,
+    readingCompleted: 0,
+    testCompleted: 0,
+    totalVocabularyWords: 0,
+    totalListeningScore: 0,
+    totalReadingScore: 0
+  })
+  const [activity, setActivity] = useState<any>({
+    totalAttempts: 0,
+    vocabularyAttempts: 0,
+    readingAttempts: 0,
+    listeningAttempts: 0,
+    testAttempts: 0,
+    lastActivityAt: null
+  })
+  const [loadingStats, setLoadingStats] = useState(true)
+  const [completionDates, setCompletionDates] = useState<Set<number>>(new Set())
+
+  // Word of the Day data - changes daily (random from vocabulary)
+  const allWords = Object.values(vocabularyData as Record<string, Record<string, string[]>>)
+    .flatMap(level => Object.values(level).flat())
+
+  // Get random word of day based on current date
+  const getRandomWordOfDay = () => {
+    const today = new Date()
+    const startOfYear = new Date(today.getFullYear(), 0, 0)
+    const dayOfYear = Math.floor((today.getTime() - startOfYear.getTime()) / 1000 / 60 / 60 / 24)
+    
+    const randomIndex = dayOfYear % allWords.length
+    const selectedWord = allWords[randomIndex]
+    const vietnamese = vietnameseTranslations[selectedWord.toLowerCase()] || selectedWord
+    
+    // Fetch pronunciation from dictionary API
+    return { word: selectedWord, pronunciation: '', meaning: vietnamese }
+  }
+
+  // Initialize word of day and fetch pronunciation
   useEffect(() => {
-    // Create flower elements dynamically
+    const initWordOfDay = async () => {
+      const word = getRandomWordOfDay()
+      
+      // Fetch full definition from Dictionary API
+      try {
+        const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word.word}`)
+        const data = await response.json()
+        
+        if (data && data[0]) {
+          const entry = data[0]
+          const meaning = entry.meanings?.[0]
+          const definition = meaning?.definitions[0]
+          
+          setWordOfDay({
+            word: entry.word,
+            vietnamese: word.meaning,
+            definition: definition?.definition || 'No definition available',
+            example: definition?.example || ''
+          })
+        } else {
+          setWordOfDay({
+            word: word.word,
+            vietnamese: word.meaning,
+            definition: 'Từ không tìm thấy định nghĩa',
+            example: ''
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching word definition:', error)
+        setWordOfDay({
+          word: word.word,
+          vietnamese: word.meaning,
+          definition: 'Không thể tải định nghĩa',
+          example: ''
+        })
+      }
+    }
+    initWordOfDay()
+  }, [])
+
+  // Fetch user stats and track completion dates
+  useEffect(() => {
+    const fetchStats = async () => {
+      setLoadingStats(true)
+      const userStats = await fetchUserStats()
+      setStats(userStats)
+      
+      // Fetch activity data
+      try {
+        const activityRes = await fetch('/api/user/attempts')
+        if (activityRes.ok) {
+          const activityData = await activityRes.json()
+          setActivity(activityData.attempts?.length > 0 
+            ? { totalAttempts: activityData.totalAttempts } 
+            : activity)
+        }
+      } catch (error) {
+        console.error('Error fetching activity:', error)
+      }
+      
+      // Extract completion dates from all progress
+      const dates = new Set<number>()
+      try {
+        const [vocabRes, listeningRes, readingRes, testRes] = await Promise.all([
+          fetch('/api/user/vocabulary-progress'),
+          fetch('/api/user/listening-progress'),
+          fetch('/api/user/reading-progress'),
+          fetch('/api/user/test-progress')
+        ])
+
+        const allData = await Promise.all([
+          vocabRes.json(),
+          listeningRes.json(),
+          readingRes.json(),
+          testRes.json()
+        ])
+
+        // Collect all completion dates
+        allData.forEach(data => {
+          const progress = data.progress || []
+          if (Array.isArray(progress)) {
+            progress.forEach((item: any) => {
+              const completedDate = new Date(item.completedAt)
+              const today = new Date()
+              
+              // Only count dates in current month
+              if (completedDate.getFullYear() === today.getFullYear() && 
+                  completedDate.getMonth() === today.getMonth()) {
+                dates.add(completedDate.getDate())
+              }
+            })
+          }
+        })
+        
+        setCompletionDates(dates)
+      } catch (error) {
+        console.error('Error fetching completion dates:', error)
+      }
+      
+      setLoadingStats(false)
+    }
+
+    fetchStats()
+  }, [])
+
+  // Refetch stats when page comes into focus
+  useEffect(() => {
+    const handleFocus = async () => {
+      const userStats = await fetchUserStats()
+      setStats(userStats)
+    }
+
+    window.addEventListener('focus', handleFocus)
+    return () => window.removeEventListener('focus', handleFocus)
+  }, [])
+
+  // Create flower elements dynamically
+  useEffect(() => {
     const flowersContainer = document.createElement('div')
     flowersContainer.className = 'flowers-container'
     flowersContainer.setAttribute('aria-hidden', 'true')
@@ -115,10 +283,13 @@ export default function Home() {
                 
                 <p className="text-gray-400 text-sm font-bold uppercase tracking-wider mb-2">Từ của ngày</p>
                 <h2 className="text-4xl font-extrabold text-gray-800 mb-1 break-words">{wordOfDay.word}</h2>
-                <p className="text-gray-500 italic mb-4 text-lg font-serif">{wordOfDay.pronunciation}</p>
+                <p className="text-[#8B0000] font-bold mb-4 text-lg">{wordOfDay.vietnamese}</p>
                 
                 <div className="bg-red-50 p-4 rounded-xl border border-red-100 mb-4">
-                  <p className="text-gray-800 font-medium">{wordOfDay.meaning}</p>
+                  <p className="text-gray-800 font-medium text-sm">{wordOfDay.definition}</p>
+                  {wordOfDay.example && (
+                    <p className="text-gray-700 italic text-sm mt-2">"{wordOfDay.example}"</p>
+                  )}
                 </div>
                 
                 <Link href="/vocabulary" className="text-red-600 font-bold hover:text-red-700 flex items-center group-hover:translate-x-2 transition">
@@ -145,13 +316,28 @@ export default function Home() {
                     ))}
                   </div>
                   <div className="grid grid-cols-7 gap-2">
-                    {Array.from({ length: 31 }).map((_, i) => (
-                      <div key={i} className={`aspect-square flex items-center justify-center text-xs rounded-lg ${
-                        i < 3 ? 'bg-green-500 text-white font-bold' : 'bg-gray-100 text-gray-400'
-                      }`}>
-                        {i + 1}
-                      </div>
-                    ))}
+                    {Array.from({ length: 31 }).map((_, i) => {
+                      const date = i + 1
+                      const isCompleted = completionDates.has(date)
+                      const today = new Date().getDate()
+                      const isToday = date === today
+                      
+                      return (
+                        <div 
+                          key={i} 
+                          className={`aspect-square flex items-center justify-center text-xs rounded-lg font-bold transition-all ${
+                            isCompleted 
+                              ? 'bg-green-500 text-white shadow-md' 
+                              : isToday
+                              ? 'bg-yellow-400 text-gray-800 border-2 border-orange-500'
+                              : 'bg-gray-100 text-gray-400'
+                          }`}
+                          title={isCompleted ? 'Hoàn thành' : ''}
+                        >
+                          {date}
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
               </div>
@@ -223,23 +409,43 @@ export default function Home() {
                   </h3>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div className="bg-blue-50 p-4 rounded-xl">
-                    <div className="text-3xl font-bold text-blue-600">40</div>
-                    <p className="text-sm text-gray-600 mt-1">Listening</p>
+                                {loadingStats ? (
+                  <div className="text-center py-8">
+                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <p className="text-gray-500 text-sm mt-2">Đang tải dữ liệu...</p>
                   </div>
-                  <div className="bg-green-50 p-4 rounded-xl">
-                    <div className="text-3xl font-bold text-green-600">20</div>
-                    <p className="text-sm text-gray-600 mt-1">Reading</p>
-                  </div>
-                  <div className="bg-purple-50 p-4 rounded-xl">
-                    <div className="text-3xl font-bold text-purple-600">400+</div>
-                    <p className="text-sm text-gray-600 mt-1">Vocabulary</p>
-                  </div>
-                </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div className="bg-blue-50 p-4 rounded-xl hover:shadow-md transition">
+                        <div className="text-3xl font-bold text-blue-600">{stats.listeningCompleted}</div>
+                        <p className="text-sm text-gray-600 mt-1">Listening</p>
+                      </div>
+                      <div className="bg-green-50 p-4 rounded-xl hover:shadow-md transition">
+                        <div className="text-3xl font-bold text-green-600">{stats.readingCompleted}</div>
+                        <p className="text-sm text-gray-600 mt-1">Reading</p>
+                      </div>
+                      <div className="bg-purple-50 p-4 rounded-xl hover:shadow-md transition">
+                        <div className="text-3xl font-bold text-purple-600">{stats.totalVocabularyWords}</div>
+                        <p className="text-sm text-gray-600 mt-1">Vocabulary</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 pt-4 border-t border-gray-200 space-y-2">
+                      <p className="text-center text-sm text-gray-700 font-semibold">
+                        ✅ {stats.vocabularyCompleted} chủ đề từ vựng
+                      </p>
+                      {stats.testCompleted > 0 && (
+                        <p className="text-center text-sm text-gray-700 font-semibold">
+                          🎓 {stats.testCompleted} bài kiểm tra
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
 
                 <p className="text-center text-xs text-gray-400 mt-4 italic">
-                  Bắt đầu học hôm nay để ghi nhận tiến độ!
+                  Tiếp tục học hôm nay để cập nhật tiến độ!
                 </p>
               </div>
             </div>

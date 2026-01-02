@@ -58,6 +58,7 @@ export default function VocabularyPracticePage() {
   const [fillInAnswer, setFillInAnswer] = useState('')
   const [progress, setProgress] = useState<TopicProgress[]>([])
   const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   // Fetch vocabulary data
   useEffect(() => {
@@ -220,6 +221,7 @@ export default function VocabularyPracticePage() {
     })
     setQuizScore(score)
     setShowResults(true)
+    setSaveError(null)
 
     // Save progress to Vercel KV
     const newProgress: TopicProgress = {
@@ -235,18 +237,38 @@ export default function VocabularyPracticePage() {
 
     setIsSaving(true)
     try {
+      console.log('Saving vocabulary progress:', updatedProgress)
       const response = await fetch('/api/user/vocabulary-progress', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedProgress)
       })
+
       if (!response.ok) {
-        console.error('Failed to save progress')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to save progress')
       }
+
+      // Record attempt
+      await fetch('/api/user/attempts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'vocabulary',
+          level,
+          topic,
+          score,
+          total: quizQuestions.length,
+          completedAt: new Date().toISOString()
+        })
+      })
+
+      console.log('Progress saved successfully')
+      setSaveError(null)
     } catch (error) {
-      console.error('Error saving progress:', error)
+      const errorMsg = error instanceof Error ? error.message : 'Error saving progress'
+      console.error('Error saving progress:', errorMsg)
+      setSaveError(errorMsg)
     } finally {
       setIsSaving(false)
     }
@@ -324,6 +346,23 @@ export default function VocabularyPracticePage() {
 
           {/* Results */}
           <div className="bg-white rounded-xl shadow-lg p-8">
+            {saveError && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+                <p className="font-bold">⚠️ Lỗi lưu tiến độ</p>
+                <p className="text-sm">{saveError}</p>
+                <p className="text-xs mt-2 text-red-600">Hãy kiểm tra kết nối mạng hoặc thử lại</p>
+              </div>
+            )}
+            {isSaving && (
+              <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-lg mb-6">
+                <p className="font-bold">⏳ Đang lưu tiến độ...</p>
+              </div>
+            )}
+            {!saveError && !isSaving && (
+              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+                <p className="font-bold">✅ Tiến độ đã được lưu</p>
+              </div>
+            )}
             <div className="text-center mb-8">
               <div className="text-8xl mb-4">{emoji}</div>
               <h2 className="text-3xl font-bold text-gray-800 mb-2">Kết quả</h2>
