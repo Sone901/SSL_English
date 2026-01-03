@@ -6,6 +6,9 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'SSL English - Nền tảng học tiếng Anh',
   description: 'SSL English - Nền tảng học tiếng Anh hiệu quả với Google OAuth',
+  icons: {
+    icon: '/favicon.png',
+  },
 }
 
 export default async function RootLayout({
