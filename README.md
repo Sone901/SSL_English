@@ -1,29 +1,37 @@
-# SSL English - Next.js with Clerk Authentication
+# SSL English - Next.js with NextAuth v5
 
-A modern English learning platform built with Next.js and Clerk for authentication.
+A modern English learning platform built with Next.js 14 and NextAuth v5 for authentication.
 
 ## Features
 
-- 🔐 Secure authentication with Clerk
+- 🔐 Dual authentication: Google OAuth + Username/Password
 - 📱 Fully responsive design
 - 🎨 Beautiful UI with Tailwind CSS
-- 🗣️ English learning courses
-- 👤 User profile management
-- 🤖 AI Integration:
-  - Text-to-Speech for Listening practice
-  - Speech Recognition for Pronunciation practice
-  - Dictionary API for Vocabulary
-  - Grammar Check for Writing practice
+- 🗣️ English learning courses (Vocabulary, Listening, Reading, Speaking, Writing)
+- 👤 User account management with Vercel KV storage
+- 📊 Progress tracking and activity statistics
+- 🚀 Production ready with Vercel deployment
 
 ## Setup
 
 ### Environment Variables
 
-Create a `.env.local` file in the root directory with your Clerk keys:
+Create a `.env` file in the root directory:
 
 ```env
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_publishable_key
-CLERK_SECRET_KEY=your_secret_key
+# Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+# NextAuth Configuration
+NEXTAUTH_SECRET=your_secure_random_key
+NEXTAUTH_URL=http://localhost:3000
+
+# Vercel KV (Redis)
+KV_REST_API_URL=your_kv_url
+KV_REST_API_TOKEN=your_kv_token
+KV_URL=your_redis_url
+REDIS_URL=your_redis_url
 ```
 
 ### Installation
@@ -38,26 +46,34 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see your application.
+Open [http://localhost:3000](http://localhost:3000)
 
 ## Project Structure
 
 ```
 src/
 ├── app/
-│   ├── layout.tsx       # Root layout with Clerk provider
-│   ├── page.tsx         # Home page
-│   ├── globals.css      # Global styles
-│   ├── sign-in/[...index]/page.tsx    # Sign in page
-│   └── sign-up/[...index]/page.tsx    # Sign up page
-├── components/          # Reusable components
-└── middleware.ts        # Clerk middleware
+│   ├── layout.tsx              # Root layout
+│   ├── page.tsx                # Home page
+│   ├── sign-in/page.tsx        # Sign in page
+│   ├── sign-up/page.tsx        # Sign up page
+│   ├── api/
+│   │   ├── auth/[...nextauth]  # NextAuth handler
+│   │   ├── auth/register       # User registration
+│   │   └── user/               # Progress & activity APIs
+│   └── skills/                 # Learning pages
+├── auth.ts                     # NextAuth configuration
+└── middleware.ts               # Protected routes
 ```
 
 ## Technologies
 
 - **Next.js 14** - React framework
+- **NextAuth v5** - Authentication
 - **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **Vercel KV** - Data storage
+- **Google OAuth** - Social login
 - **Tailwind CSS** - Styling
 - **Clerk** - Authentication
 
