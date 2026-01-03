@@ -10,7 +10,7 @@ export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || '/vocabulary'
+  const callbackUrl = searchParams.get('callbackUrl') || '/'
 
   const handleCredentialsSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
